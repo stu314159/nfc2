@@ -6,7 +6,7 @@ import scipy.io
 
 """
 Input file generator for the LBM code for 3D flow past an obstacle whose geometry is described
-by 'turbine_blade.mat'
+by 'geometry_description.mat'
 Num_ts = total number of LBM time steps to execute
 ts_rep_frequency = time-step reporting frequency. (LBM code gives periodic updates on progress)
 Warmup_ts = number of time steps to take before recording data
@@ -57,16 +57,16 @@ Cs = args.Cs
 
 #----You should not have to edit anything below this line -------------------
 
-turb_input = scipy.io.loadmat('turbine_blade.mat')
+geom_input = scipy.io.loadmat('geometry_description.mat')
 # overall domain dimensions
-Lx_p = float(turb_input['Lx_p'])
-Ly_p = float(turb_input['Ly_p'])
-Lz_p = float(turb_input['Lz_p'])
-Lo = float(turb_input['Lo'])
-Ny_divs = int(turb_input['Ny_divs'])
-snl = list((turb_input['snl']).flatten())
-inl = list((turb_input['inl']).flatten())
-onl = list((turb_input['onl']).flatten())
+Lx_p = float(geom_input['Lx_p'])
+Ly_p = float(geom_input['Ly_p'])
+Lz_p = float(geom_input['Lz_p'])
+Lo = float(geom_input['Lo'])
+Ny_divs = int(geom_input['Ny_divs'])
+snl = list((geom_input['snl']).flatten())
+inl = list((geom_input['inl']).flatten())
+onl = list((geom_input['onl']).flatten())
 
 Ny = math.ceil((Ny_divs-1)*(Ly_p/Lo))+1
 Nx = math.ceil((Ny_divs-1)*(Lx_p/Lo))+1
