@@ -65,8 +65,8 @@ Lz_p = float(geom_input['Lz_p'])
 Lo = float(geom_input['Lo'])
 Ny_divs = int(geom_input['Ny_divs'])
 snl = list((geom_input['snl']).flatten())
-inl = list((geom_input['inl']).flatten())
-onl = list((geom_input['onl']).flatten())
+inl = list((geom_input['inl']).flatten()) # must be inlet on Z-min
+onl = list((geom_input['onl']).flatten()) # must be outlet on Z-max
 
 Ny = math.ceil((Ny_divs-1)*(Ly_p/Lo))+1
 Nx = math.ceil((Ny_divs-1)*(Lx_p/Lo))+1
