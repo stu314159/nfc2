@@ -9,6 +9,8 @@ Lz_p = 8;
 
 Ny_divs = 5;
 
+plot_geom = false;
+
 %% select fluid for the simulation
 fluid = 1;
 % 1 = glycerin
@@ -110,16 +112,18 @@ else
 end
 
 %% plot the relevant lattice points to confirm correctness
-figure(1)
-scatter3(gcoord(inl,1),gcoord(inl,2),gcoord(inl,3),'r.');
-hold on
-scatter3(gcoord(onl,1),gcoord(onl,2),gcoord(onl,3),'b.');
-scatter3(gcoord(snl,1),gcoord(snl,2),gcoord(snl,3),'g.');
-hold off
-%scatter3(gcoord(obst_list,1),gcoord(obst_list,2),gcoord(obst_list,3),'b.');
-axis([0 Lx_p 0 Ly_p 0 Lz_p]);
-axis equal
-view([-99 52]);
+if plot_geom
+    figure(1)
+    scatter3(gcoord(inl,1),gcoord(inl,2),gcoord(inl,3),'r.');
+    hold on
+    scatter3(gcoord(onl,1),gcoord(onl,2),gcoord(onl,3),'b.');
+    scatter3(gcoord(snl,1),gcoord(snl,2),gcoord(snl,3),'g.');
+    hold off
+    %scatter3(gcoord(obst_list,1),gcoord(obst_list,2),gcoord(obst_list,3),'b.');
+    axis([0 Lx_p 0 Ly_p 0 Lz_p]);
+    axis equal
+    view([-99 52]);
+end
 
 %% save the data to a *.mat file
 file_name = 'geometry_description.mat';
