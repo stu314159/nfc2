@@ -279,8 +279,8 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 
 		}
 		if(onl[tid]==1){
-		  uz=0.; uy=0.; rho=rho_lbm;
-                  ux = -1.+((2.*(f1+f7+f9+f11+f13)+(f0+f3+f4+f5+f6)))/rho;		 
+		  ux=0.; uy=0.; rho=rho_lbm;
+		  uz = -1.+((2.*(f5+f7+f8+f9+f10)+(f0+f1+f2+f3+f4)))/rho;		 
 		}
 		if(snl[tid]==1){
 		  ux=0.; uy=0.; uz=0.;
@@ -395,13 +395,11 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 		    //f10, bb_spd=f11
 		    f10=fe10+(f11-fe11); //fIn[10*nnodes+tid]=f10;
 		  }else{
-		    //onl - adjust for unknown velocities: 2,8,10,12,14
-		    //    - bounceback from: 1,13,11,9,7 respectively
-                    f2 = fe2 + (f1-fe1);
-                    f8 = fe8 + (f13-fe13);
-                    f10 = fe10 + (f11-fe11);
-                    f12 = fe12 + (f9-fe9);
-                    f14 = fe14 + (f7-fe7);
+		     f6=fe6+(f5-fe5); 
+		    f11=fe11+(f10-fe10); 
+		    f12=fe12+(f9-fe9); 
+		    f13=fe13+(f8-fe8); 
+		    f14=fe14+(f7-fe7); 
 		  }
 		  //ft0=f0-fe0;
 		  ft1=f1-fe1; 
