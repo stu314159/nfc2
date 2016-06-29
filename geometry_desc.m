@@ -7,7 +7,7 @@ Lx_p = 1;
 Ly_p = 1;
 Lz_p = 8;
 
-Ny_divs = 5;
+Ny_divs = 13;
 
 plot_geom = false;
 

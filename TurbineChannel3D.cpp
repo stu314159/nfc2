@@ -844,6 +844,7 @@ void TurbineChannel3D::initialize_local_partition_variables(){
 
 
     
+
     // allocate memory for dependent variables and BC arrays
     fEven = new float[nnodes*numSpd];
     fOdd = new float[nnodes*numSpd];
