@@ -44,14 +44,14 @@ switch obstacle
        x_c = 0.5*Lx_p;
        z_c = 0.5*Lz_p;
        cyl_rad = 0.1*Lx_p;
-       Lo = cyl_rad;
+       Lo = cyl_rad*2;
        
     case 2
        x_c = 0.5*Lx_p;
        z_c = 0.5*Lz_p;
        y_max = 0.75*Ly_p;
        cyl_rad = 0.1*Lx_p;
-       Lo = cyl_rad;
+       Lo = cyl_rad*2;
       
 end
 
