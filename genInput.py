@@ -64,6 +64,8 @@ Ly_p = float(geom_input['Ly_p'])
 Lz_p = float(geom_input['Lz_p'])
 Lo = float(geom_input['Lo'])
 Ny_divs = int(geom_input['Ny_divs'])
+rho_p = float(geom_input['rho_p'])
+nu_p = float(geom_input['nu_p'])
 snl = list((geom_input['snl']).flatten())
 inl = list((geom_input['inl']).flatten())
 onl = list((geom_input['onl']).flatten())
@@ -115,12 +117,6 @@ for i in range(len(onl)):
     outletFile.write('%i \n'% nd) 
 outletFile.close()
 
-
-#rho_p = 1260. # physical density
-#nu_p = 1.49/rho_p #physical kinematic viscosity
-
-rho_p = 1000.
-nu_p = 1.0e-3/rho_p
 
 # non-dimensionalization
 Uo = nu_p*Re/Lo
