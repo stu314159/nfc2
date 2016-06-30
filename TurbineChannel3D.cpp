@@ -144,6 +144,7 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
       #pragma omp parallel for collapse(3)
       #pragma acc parallel loop collapse(3)  async(streamNum) wait(0,1,2,3)
       for(int z = HALO;z<(totalSlices-HALO);z++){
+//         #pragma omp parallel for collapse(2)
           for(int y = 0;y<Ny;y++){
               for(int x = 0;x<Nx;x++){
                   int tid_l, tid_g;
@@ -275,12 +276,12 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 		if(inl[tid]==1){
 		  ux=0;uy=0; uz=u_bc[tid];
 		  //set rho based on uz
-		  rho = (1./(1.-uz))*(2.0*(f6+f11+f12+f13+f14)+(f0+f1+f2+f3+f4));
+		  rho = (1.F/(1.F-uz))*(2.0F*(f6+f11+f12+f13+f14)+(f0+f1+f2+f3+f4));
 
 		}
 		if(onl[tid]==1){
 		  ux=0.; uy=0.; rho=rho_lbm;
-		  uz = -1.+((2.*(f5+f7+f8+f9+f10)+(f0+f1+f2+f3+f4)))/rho;		 
+		  uz = -1.F+((2.F*(f5+f7+f8+f9+f10)+(f0+f1+f2+f3+f4)))/rho;		 
 		}
 		if(snl[tid]==1){
 		  ux=0.; uy=0.; uz=0.;
@@ -291,90 +292,90 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 		float fe0,fe1,fe2,fe3,fe4,fe5,fe6,fe7,fe8,fe9,fe10,fe11,fe12,fe13,fe14;
 		//speed 0 ex=ey=ez=0 w=2./9.
 	
-		fe0=rho*(2./9.)*(1.-1.5*(ux*ux+uy*uy+uz*uz));
+		fe0=rho*(2.F/9.F)*(1.F-1.5F*(ux*ux+uy*uy+uz*uz));
 	
 
 		//speed 1 ex=1 ey=ez=0 w=1./9.
-		cu=3.*(1.*ux);
-		fe1=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
-				1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(1.F*ux);
+		fe1=rho*(1.F/9.F)*(1.F+cu+0.5F*(cu*cu)-
+				1.5F*(ux*ux+uy*uy+uz*uz));
 	      
 
 		//speed 2 ex=-1 ey=ez=0 w=1./9.
-		cu=3.*((-1.)*ux);
-		fe2=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
-				1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*((-1.F)*ux);
+		fe2=rho*(1.F/9.F)*(1.F+cu+0.5F*(cu*cu)-
+				1.5F*(ux*ux+uy*uy+uz*uz));
 	      
 
 		//speed 3 ex=0 ey=1 ez=0 w=1./9.
-		cu=3.*(1.*uy);
-		fe3=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
-				1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(1.F*uy);
+		fe3=rho*(1.F/9.F)*(1.F+cu+0.5F*(cu*cu)-
+				1.5F*(ux*ux+uy*uy+uz*uz));
 	      
 
 		//speed 4 ex=0 ey=-1 ez=0 w=1./9.
-		cu=3.*(-1.*uy);
-		fe4=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
-				1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(-1.F*uy);
+		fe4=rho*(1.F/9.F)*(1.F+cu+0.5F*(cu*cu)-
+				1.5F*(ux*ux+uy*uy+uz*uz));
 	
 
 		//speed 5 ex=ey=0 ez=1 w=1./9.
-		cu=3.*(1.*uz);
-		fe5=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
-				1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(1.F*uz);
+		fe5=rho*(1.F/9.F)*(1.F+cu+0.5F*(cu*cu)-
+				1.5F*(ux*ux+uy*uy+uz*uz));
 	
 
 		//speed 6 ex=ey=0 ez=-1 w=1./9.
-		cu=3.*(-1.*uz);
-		fe6=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
-				1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(-1.F*uz);
+		fe6=rho*(1.F/9.F)*(1.F+cu+0.5F*(cu*cu)-
+				1.5F*(ux*ux+uy*uy+uz*uz));
 	
 		//speed 7 ex=ey=ez=1 w=1./72.
-		cu=3.*(ux+uy+uz);
-		fe7=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(ux+uy+uz);
+		fe7=rho*(1.F/72.F)*(1.F+cu+0.5F*(cu*cu)-
+				  1.5F*(ux*ux+uy*uy+uz*uz));
 	      
 
 		//speed 8 ex=-1 ey=ez=1 w=1./72.
-		cu=3.*(-ux+uy+uz);
-		fe8=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(-ux+uy+uz);
+		fe8=rho*(1.F/72.F)*(1.F+cu+0.5F*(cu*cu)-
+				  1.5F*(ux*ux+uy*uy+uz*uz));
 	
 
 		//speed 9 ex=1 ey=-1 ez=1 w=1./72.
-		cu=3.*(ux-uy+uz);
-		fe9=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(ux-uy+uz);
+		fe9=rho*(1.F/72.F)*(1.F+cu+0.5F*(cu*cu)-
+				  1.5F*(ux*ux+uy*uy+uz*uz));
 	
 
 		//speed 10 ex=-1 ey=-1 ez=1 w=1/72
-		cu=3.*(-ux-uy+uz);
-		fe10=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(-ux-uy+uz);
+		fe10=rho*(1.F/72.F)*(1.F+cu+0.5F*(cu*cu)-
+				  1.5F*(ux*ux+uy*uy+uz*uz));
 	      
 
 		//speed 11 ex=1 ey=1 ez=-1 w=1/72
-		cu=3.*(ux+uy-uz);
-		fe11=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(ux+uy-uz);
+		fe11=rho*(1.F/72.F)*(1.F+cu+0.5F*(cu*cu)-
+				  1.5F*(ux*ux+uy*uy+uz*uz));
 	
 
 		//speed 12 ex=-1 ey=1 ez=-1 w=1/72
-		cu=3.*(-ux+uy-uz);
-		fe12=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(-ux+uy-uz);
+		fe12=rho*(1.F/72.F)*(1.F+cu+0.5F*(cu*cu)-
+				  1.5F*(ux*ux+uy*uy+uz*uz));
 	      
 
 		//speed 13 ex=1 ey=ez=-1 w=1/72
-		cu=3.*(ux-uy-uz);
-		fe13=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(ux-uy-uz);
+		fe13=rho*(1.F/72.F)*(1.F+cu+0.5F*(cu*cu)-
+				  1.5F*(ux*ux+uy*uy+uz*uz));
 	      
 
 		//speed 14 ex=ey=ez=-1 w=1/72
-		cu=3.*(-ux-uy-uz);
-		fe14=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
+		cu=3.F*(-ux-uy-uz);
+		fe14=rho*(1.F/72.F)*(1.F+cu+0.5F*(cu*cu)-
+				  1.5F*(ux*ux+uy*uy+uz*uz));
 	
 		// if on inlet or outlet, compute and bounce-back non-equilibrium part of f.
 		// see referenecs on regularized boundary conditions for full details on theory.
@@ -418,25 +419,25 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 		  ft14=f14-fe14;
 
 		  //now, multiply by f# = ((ft#)*Q_flat)*Q_flat'
-		  f0= - ft1/3. - ft2/3. - ft3/3. - ft4/3. - ft5/3. - ft6/3. - ft7 - ft8 - ft9 - ft10 - ft11 - ft12 - ft13 - ft14; 
-		  f1=(2.*ft1)/3. + (2.*ft2)/3. - ft3/3. - ft4/3. - ft5/3. - ft6/3.; 
-		  f2=(2.*ft1)/3. + (2.*ft2)/3. - ft3/3. - ft4/3. - ft5/3. - ft6/3.; 
-		  f3=(2.*ft3)/3. - ft2/3. - ft1/3. + (2.*ft4)/3. - ft5/3. - ft6/3.; 
-		  f4=(2.*ft3)/3. - ft2/3. - ft1/3. + (2.*ft4)/3. - ft5/3. - ft6/3.; 
-		  f5=(2.*ft5)/3. - ft2/3. - ft3/3. - ft4/3. - ft1/3. + (2.*ft6)/3.; 
-		  f6=(2.*ft5)/3. - ft2/3. - ft3/3. - ft4/3. - ft1/3. + (2.*ft6)/3.; 
-		  f7=(2.*ft1)/3. + (2.*ft2)/3. + (2.*ft3)/3. + (2.*ft4)/3. + (2.*ft5)/3. + (2.*ft6)/3. + 8.*ft7 + 8.*ft14;
-		  f8= (2.*ft1)/3. + (2.*ft2)/3. + (2.*ft3)/3. + (2.*ft4)/3. + (2.*ft5)/3. + (2.*ft6)/3. + 8.*ft8 + 8.*ft13;
-		  f9= (2.*ft1)/3. + (2.*ft2)/3. + (2.*ft3)/3. + (2.*ft4)/3. + (2.*ft5)/3. + (2.*ft6)/3. + 8.*ft9 + 8.*ft12;
-		  f10= (2.*ft1)/3. + (2.*ft2)/3. + (2.*ft3)/3. + (2.*ft4)/3. + (2.*ft5)/3. + (2.*ft6)/3. + 8.*ft10 + 8.*ft11;
-		  f11= (2.*ft1)/3. + (2.*ft2)/3. + (2.*ft3)/3. + (2.*ft4)/3. + (2.*ft5)/3. + (2.*ft6)/3. + 8.*ft10 + 8.*ft11;
-		  f12= (2.*ft1)/3. + (2.*ft2)/3. + (2.*ft3)/3. + (2.*ft4)/3. + (2.*ft5)/3. + (2.*ft6)/3. + 8.*ft9 + 8.*ft12;
-		  f13= (2.*ft1)/3. + (2.*ft2)/3. + (2.*ft3)/3. + (2.*ft4)/3. + (2.*ft5)/3. + (2.*ft6)/3. + 8.*ft8 + 8.*ft13;
-		  f14= (2.*ft1)/3. + (2.*ft2)/3. + (2.*ft3)/3. + (2.*ft4)/3. + (2.*ft5)/3. + (2.*ft6)/3. + 8.*ft7 + 8.*ft14;
+		  f0= - ft1/3.F - ft2/3.F - ft3/3.F - ft4/3.F - ft5/3.F - ft6/3.F - ft7 - ft8 - ft9 - ft10 - ft11 - ft12 - ft13 - ft14; 
+		  f1=(2.F*ft1)/3.F + (2.F*ft2)/3.F - ft3/3.F - ft4/3.F - ft5/3.F - ft6/3.F; 
+		  f2=(2.F*ft1)/3.F + (2.F*ft2)/3.F - ft3/3.F - ft4/3.F - ft5/3.F - ft6/3.F; 
+		  f3=(2.F*ft3)/3.F - ft2/3.F - ft1/3.F + (2.F*ft4)/3.F - ft5/3.F - ft6/3.F; 
+		  f4=(2.F*ft3)/3.F - ft2/3.F - ft1/3.F + (2.F*ft4)/3.F - ft5/3.F - ft6/3.F; 
+		  f5=(2.F*ft5)/3.F - ft2/3.F - ft3/3.F - ft4/3.F - ft1/3.F + (2.F*ft6)/3.F; 
+		  f6=(2.F*ft5)/3.F - ft2/3.F - ft3/3.F - ft4/3.F - ft1/3.F + (2.F*ft6)/3.F; 
+		  f7=(2.F*ft1)/3.F + (2.F*ft2)/3.F + (2.F*ft3)/3.F + (2.F*ft4)/3.F + (2.F*ft5)/3.F + (2.F*ft6)/3.F + 8.F*ft7 + 8.F*ft14;
+		  f8= (2.F*ft1)/3.F + (2.F*ft2)/3.F + (2.F*ft3)/3.F + (2.F*ft4)/3.F + (2.F*ft5)/3.F + (2.F*ft6)/3.F + 8.F*ft8 + 8.F*ft13;
+		  f9= (2.F*ft1)/3.F + (2.F*ft2)/3.F + (2.F*ft3)/3.F + (2.F*ft4)/3.F + (2.F*ft5)/3.F + (2.F*ft6)/3.F + 8.F*ft9 + 8.F*ft12;
+		  f10= (2.F*ft1)/3.F + (2.F*ft2)/3.F + (2.F*ft3)/3.F + (2.F*ft4)/3.F + (2.F*ft5)/3.F + (2.F*ft6)/3.F + 8.F*ft10 + 8.F*ft11;
+		  f11= (2.F*ft1)/3.F + (2.F*ft2)/3.F + (2.F*ft3)/3.F + (2.F*ft4)/3.F + (2.F*ft5)/3.F + (2.F*ft6)/3.F + 8.F*ft10 + 8.F*ft11;
+		  f12= (2.F*ft1)/3.F + (2.F*ft2)/3.F + (2.F*ft3)/3.F + (2.F*ft4)/3.F + (2.F*ft5)/3.F + (2.F*ft6)/3.F + 8.F*ft9 + 8.F*ft12;
+		  f13= (2.F*ft1)/3.F + (2.F*ft2)/3.F + (2.F*ft3)/3.F + (2.F*ft4)/3.F + (2.F*ft5)/3.F + (2.F*ft6)/3.F + 8.F*ft8 + 8.F*ft13;
+		  f14= (2.F*ft1)/3.F + (2.F*ft2)/3.F + (2.F*ft3)/3.F + (2.F*ft4)/3.F + (2.F*ft5)/3.F + (2.F*ft6)/3.F + 8.F*ft7 + 8.F*ft14;
 
 		  //update fIn for all velocities based on strain tensor
 		  //f0, still equals 0..
-		  cu = 9./2.; w = 1./9.;
+		  cu = 9.F/2.F; w = 1.F/9.F;
 
 		  //fIn[..] = fe#+f#
 		  f0=fe0+f0;
@@ -447,7 +448,7 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 		  f4=fe4+f4*cu*w;
 		  f5=fe5+f5*cu*w;
 		  f6=fe6+f6*cu*w;
-		  w = 1./72.;
+		  w = 1.F/72.F;
 		  f7=fe7+f7*cu*w;
 		  f8=fe8+f8*cu*w;
 		  f9=fe9+f9*cu*w;
@@ -468,8 +469,8 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 		s33=(f5-fe5)+(f6-fe6)+(f7-fe7)+(f8-fe8)+(f9-fe9)+(f10-fe10)+(f11-fe11)+(f12-fe12)+(f13-fe13)+(f14-fe14);
 		
                    
-		float nu = 1./omega_l; nu-=0.5; nu/=3.;
-		float P = s11*s11+2.*s12*s12+2.*s13*s13+s22*s22+2.*s23*s23+s33*s33;
+		float nu = 1.F/omega_l; nu-=0.5F; nu/=3.F;
+		float P = s11*s11+2.F*s12*s12+2.F*s13*s13+s22*s22+2.F*s23*s23+s33*s33;
 		P = sqrt(P);
 		P*=Cs;
 		P+=nu*nu;
@@ -477,10 +478,10 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 		P-=nu;
 
 		//compute turbulent nu
-		float nu_e = (1./(6.))*P;
+		float nu_e = (1.F/(6.F))*P;
 		//update omega
 		    
-		float omega = 1./(3.*(nu+nu_e)+0.5); //<-- shadows class data member this->omega
+		float omega = 1.F/(3.F*(nu+nu_e)+0.5F); //<-- shadows class data member this->omega
 
 		//everyone (except solid nodes) relax...
                 if(snl[tid]!= 1){
