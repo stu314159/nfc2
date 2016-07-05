@@ -7,9 +7,9 @@ Lx_p = 1;
 Ly_p = 1;
 Lz_p = 8;
 
-Ny_divs = 13;
+Ny_divs = 31;
 
-plot_geom = false;
+plot_geom = true;
 
 %% select fluid for the simulation
 fluid = 1;
@@ -32,10 +32,12 @@ switch fluid
         
 end
 
-obstacle = 1;
+obstacle = 4;
 % 0 = no obstacle
 % 1 = cylinder, bottom to top
 % 2 = cylinder, partial height
+% 3 = cylindrical piling with elliptical scour pit
+
 switch obstacle
     case 0
         Lo = Ly_p;
@@ -52,6 +54,14 @@ switch obstacle
        y_max = 0.75*Ly_p;
        cyl_rad = 0.1*Lx_p;
        Lo = cyl_rad*2;
+       
+    case 4
+       x_c = 0.5*Lx_p;
+       y_c = 0.5*Ly_p;
+       z_c = 0.75*Lz_p;
+       sphere_rad = 0.1*Ly_p;
+       Lo = sphere_rad*2;
+        
       
 end
 
@@ -91,6 +101,12 @@ switch obstacle
       
        obst_list = find((((gcoord(:,1) - x_c).^2 + (gcoord(:,3)-z_c).^2) < cyl_rad*cyl_rad) & ...
          (gcoord(:,2) < y_max));
+     
+     
+    case 4
+        
+        obst_list = find(((gcoord(:,1) - x_c).^2 + (gcoord(:,2) - y_c).^2 + ...
+            (gcoord(:,3) - z_c).^2 < sphere_rad*sphere_rad));
 end
 
 % add obstacle nodes to the solid node list
@@ -114,12 +130,12 @@ end
 %% plot the relevant lattice points to confirm correctness
 if plot_geom
     figure(1)
-    scatter3(gcoord(inl,1),gcoord(inl,2),gcoord(inl,3),'r.');
-    hold on
-    scatter3(gcoord(onl,1),gcoord(onl,2),gcoord(onl,3),'b.');
-    scatter3(gcoord(snl,1),gcoord(snl,2),gcoord(snl,3),'g.');
-    hold off
-    %scatter3(gcoord(obst_list,1),gcoord(obst_list,2),gcoord(obst_list,3),'b.');
+%     scatter3(gcoord(inl,1),gcoord(inl,2),gcoord(inl,3),'r.');
+%     hold on
+%     scatter3(gcoord(onl,1),gcoord(onl,2),gcoord(onl,3),'b.');
+%     scatter3(gcoord(snl,1),gcoord(snl,2),gcoord(snl,3),'g.'); hold on;
+%     hold off
+    scatter3(gcoord(obst_list,1),gcoord(obst_list,2),gcoord(obst_list,3),'b.');
     axis([0 Lx_p 0 Ly_p 0 Lz_p]);
     axis equal
     view([-99 52]);
