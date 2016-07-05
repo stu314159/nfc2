@@ -14,6 +14,7 @@ plot_freq = number of time-steps between data dumps on pressure and velocity
 Re = Flow Reynolds number
 dt = time steps size
 Cs = Turbulence model parameter
+Restart_flag = 1, this is a restart; an appropriate restart data file must be available.  0 = no restart
 Some suggested problem inputs:
 
 Num_ts: 10000
@@ -40,6 +41,7 @@ parser.add_argument('plot_freq',type=int)
 parser.add_argument('Re',type=float)
 parser.add_argument('dt',type=float)
 parser.add_argument('Cs',type=float)
+parser.add_argument('Restart_flag',type=int)
 # parse input arguments
 args = parser.parse_args()
 
@@ -51,6 +53,7 @@ plot_freq = args.plot_freq
 Re = args.Re
 dt = args.dt
 Cs = args.Cs
+Restart_flag = args.Restart_flag
 
 
 
@@ -170,6 +173,7 @@ if run_dec!='n' and run_dec!='N':
     params.write('%d \n'%Nx) # number of nodes in the x, y and z direction
     params.write('%d \n'%Ny)
     params.write('%d \n'%Nz)
+    params.write('%d \n'%Restart_flag) # 1 = load restart data; 0 = no restart
     
     # the following will not be used by the MPI code, but will be available
     # for the post-processing script

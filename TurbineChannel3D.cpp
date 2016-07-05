@@ -56,6 +56,7 @@ rank(rk), size(sz)
     initialize_local_partition_variables();
     initialize_mpi_buffers();
     vtk_ts = 0;
+
 }
 
 TurbineChannel3D::~TurbineChannel3D(){
@@ -99,6 +100,150 @@ void TurbineChannel3D::write_bc_arrays(MPI_Comm comm){
     MPI_File_close(&fh_inl);
     MPI_File_close(&fh_onl);
 }
+
+void TurbineChannel3D::load_restart_data(MPI_Comm comm){
+    // restart data is saved in a binary format
+    // each lattice point will have its numSpd density distribution
+    // function values in consecutive locations.  Leave it up to getIdx to distribute
+    // appropriately.
+
+
+    MPI_File fh_restart;
+    MPI_Status mpi_s;
+    // open MPI restart file
+    MPI_File_open(comm, "restart.b_dat",
+        MPI_MODE_RDONLY,MPI_INFO_NULL,&fh_restart);
+
+
+    // create a temporary buffer to hold your data
+    const int numPoints = numMySlices*Nx*Ny;
+    float * restart_data = new float[numPoints*numSpd];
+    // read your chunk of data
+    int offset_s = firstSlice*Nx*Ny*numSpd*sizeof(float);
+    MPI_File_read_at(fh_restart,offset_s,restart_data,numPoints*numSpd,MPI_FLOAT,&mpi_s);
+
+    // close the MPI data file
+    MPI_File_close(&fh_restart);
+
+    // copy the restart data into your data buffers
+    int tid, tid_l;
+    for(int z=1; z<totalSlices-1;z++){
+        for(int y=0;y<Ny;y++){
+            for(int x=0;x<Nx;x++){
+                tid=x+y*Nx+z*Nx*Ny; tid_l = x+y*Nx+(z-1)*Nx*Ny;
+                for(int spd=0;spd<numSpd;spd++){
+                    fEven[getIdx(nnodes, numSpd, tid,spd)]=restart_data[tid_l*numSpd+spd];
+                    fOdd[getIdx(nnodes,numSpd,tid,spd)]=restart_data[tid_l*numSpd+spd];
+                }
+            }
+        }
+    }
+
+    // create data buffers for halo slice data for sharing with neighbor nodes
+    float * halo_out_m = new float[Nx*Ny*numSpd];
+    float * halo_in_m = new float[Nx*Ny*numSpd];
+    float * halo_out_p = new float[Nx*Ny*numSpd];
+    float * halo_in_p = new float[Nx*Ny*numSpd];
+
+    // share halo data
+    // extract halo data into buffer
+    int z; 
+    z = 1;  // lower boundary slice
+    for(int y =  0; y < Ny; y++){
+        for(int x = 0; x<Nx; x++){
+            tid=x+y*Nx+z*Nx*Ny; tid_l = x+y*Nx;
+            for(int spd=0;spd<numSpd;spd++){
+                halo_out_m[tid_l*numSpd+spd] = fEven[getIdx(nnodes,numSpd,tid,spd)];
+            }
+        }
+    }
+
+    z = totalSlices-2; //upper boundary slice
+    for(int y =  0; y < Ny; y++){
+        for(int x = 0; x<Nx; x++){
+            tid=x+y*Nx+z*Nx*Ny; tid_l = x+y*Nx;
+            for(int spd=0;spd<numSpd;spd++){
+                halo_out_p[tid_l*numSpd+spd] = fEven[getIdx(nnodes,numSpd,tid,spd)];
+            }
+        }
+    }
+  
+
+    // initiate send/recv to in buffers
+    // send to neighbor m
+    MPI_Isend(halo_out_m,Nx*Ny*numSpd,MPI_FLOAT,nd_m,tag_d,comm, &rq_out1);
+    MPI_Irecv(halo_in_p,Nx*Ny*numSpd,MPI_FLOAT,nd_p,tag_d,comm,&rq_in1);
+    // send to neighbor p
+    MPI_Isend(halo_out_p,Nx*Ny*numSpd,MPI_FLOAT,nd_p,tag_u,comm,&rq_out2);
+    MPI_Irecv(halo_in_m,Nx*Ny*numSpd,MPI_FLOAT,nd_m,tag_u,comm,&rq_in2);
+
+    MPI_Wait(&rq_in1,&stat); // data received from node p
+    MPI_Wait(&rq_in2,&stat); // data received from node m
+
+    // place halo data into fEven/fOdd arrays
+    z = 0; // lower boundary slice
+    for(int y = 0; y<Ny; y++){
+        for(int x = 0; x<Nx; x++){
+            tid = x+y*Nx+z*Nx*Ny; tid_l = x+y*Nx;
+            for(int spd=0; spd<numSpd;spd++){
+                fEven[getIdx(nnodes,numSpd,tid,spd)]=halo_in_m[tid_l*numSpd+spd];
+                fOdd[getIdx(nnodes,numSpd,tid,spd)]=halo_in_m[tid_l*numSpd+spd];
+            }
+        }
+    }
+
+    z = totalSlices-1; // lower boundary slice
+    for(int y = 0; y<Ny; y++){
+        for(int x = 0; x<Nx; x++){
+            tid = x+y*Nx+z*Nx*Ny; tid_l = x+y*Nx;
+            for(int spd=0; spd<numSpd;spd++){
+                fEven[getIdx(nnodes,numSpd,tid,spd)]=halo_in_p[tid_l*numSpd+spd];
+                fOdd[getIdx(nnodes,numSpd,tid,spd)]=halo_in_p[tid_l*numSpd+spd];
+            }
+        }
+    }
+
+    // clean up
+    delete [] restart_data;
+    delete [] halo_out_m;
+    delete [] halo_in_m;
+    delete [] halo_out_p;
+    delete [] halo_in_p;
+
+}
+
+void TurbineChannel3D::save_restart_data(MPI_Comm comm){
+
+// assume all data retrieved back on the CPU.
+// make temporary buffers to hold
+
+    float * restart_data = new float[Nx*Ny*numSpd*numMySlices];
+    int tid, tid_l;
+    for(int z = 1; z<totalSlices-1; z++){
+        for(int y = 0; y<Ny; y++){
+            for(int x = 0;x<Nx;x++){
+                tid=x+y*Nx+z*Nx*Ny; tid_l = x+y*Nx+(z-1)*Nx*Ny;
+                for(int spd=0;spd<numSpd;spd++){
+                    restart_data[tid_l*numSpd+spd] = fEven[getIdx(nnodes,numSpd,tid,spd)];
+                }
+            }
+        }
+    }        
+
+    // open restart file -- if it existed before, I want to over-write previous data
+    MPI_File fh_restart;
+    MPI_Status mpi_s;
+    // open MPI restart file
+    MPI_File_open(comm,"restart.b_dat",
+      MPI_MODE_CREATE|MPI_MODE_WRONLY,MPI_INFO_NULL,&fh_restart);
+
+    int offset_s = firstSlice*Nx*Ny*numSpd*sizeof(float);
+    MPI_File_write_at(fh_restart,offset_s,restart_data,numMySlices*Nx*Ny*numSpd,MPI_FLOAT,&mpi_s);
+    // close the MPI data file
+    MPI_File_close(&fh_restart);
+    delete [] restart_data;
+}
+
 
 void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
     
@@ -865,6 +1010,7 @@ void TurbineChannel3D::initialize_local_partition_variables(){
 
 
     // initialize dependent variable arrays
+    // if this is a restart case, this data will be over-written
     int tid;
     for(int z=0; z<totalSlices;z++){
         for(int y=0;y<Ny;y++){
@@ -988,6 +1134,7 @@ void TurbineChannel3D::read_input_file(const string input_file){
     input_params >> Nx;
     input_params >> Ny;
     input_params >> Nz;
+    input_params >> Restart_flag;
     input_params.close();
 }
 
@@ -1005,3 +1152,5 @@ void TurbineChannel3D::initialize_lattice_data(){
         Pspeeds = PspeedsD3Q15; 
     }
 }
+
+
