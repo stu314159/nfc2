@@ -22,4 +22,7 @@ cp $PBS_O_WORKDIR/params.lbm .
 cp $PBS_O_WORKDIR/process_lbm_data.py .
 cp $PBS_O_WORKDIR/process_lbm_data_mpi.py .
 cp $PBS_O_WORKDIR/vtkHelper.py .
+if [ -f $PBS_O_WORKDIR/restart.b_dat ]; then
+cp $PBS_O_WORKDIR/restart.b_dat .
+fi
 aprun -B ./turbineSim 
