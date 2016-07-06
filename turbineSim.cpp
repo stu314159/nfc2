@@ -23,9 +23,16 @@ int main(int argc, char * argv[])
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
           
     TurbineChannel3D pp(rank, size);
+
+    if (pp.Restart_flag == 1){
+        pp.load_restart_data(MPI_COMM_WORLD);
+    }
     
     if(rank==0){
         cout<< "Problem initialized!" << endl;
+        if(pp.Restart_flag == 1){
+            cout << "Restart problem: previous data successfully loaded." << endl;
+        }
     }
 
     // write out bc data
@@ -58,8 +65,8 @@ int main(int argc, char * argv[])
     #pragma acc data \
         copyin(inl[0:nnodes], onl[0:nnodes], snl[0:nnodes], u_bc[0:nnodes]) \
         copyin(Mspeeds[0:numMspeeds],Pspeeds[0:numPspeeds]) \
-        copyin(fEven[0:nnodes*numSpd]) \
-        create(fOdd[0:nnodes*numSpd])
+        copy(fEven[0:nnodes*numSpd]) \
+        copy(fOdd[0:nnodes*numSpd])
         
     {
         // write initial data
@@ -102,6 +109,9 @@ int main(int argc, char * argv[])
     PAT_record(PAT_STATE_OFF);
     #endif
     
+    // save restart data
+    pp.save_restart_data(MPI_COMM_WORLD);
+
     MPI_Finalize();
     return 0;
 }
