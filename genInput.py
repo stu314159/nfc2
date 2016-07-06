@@ -24,6 +24,7 @@ plot_freq: 2000
 Re: 20000
 dt: .002
 Cs: 11
+Restart_flag: 0  <-- must have restart.b_dat file for same geometry/discretization in working directory to enable restart run
 
 
 For longer testing with turbulent flow simulations that you expect to run stably,
