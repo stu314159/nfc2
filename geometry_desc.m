@@ -38,7 +38,7 @@ obstacle = 5;
 % 2 = cylinder, partial height
 % 3 = cylindrical piling with elliptical scour pit
 % 4 = sphere
-% 5 = cylindrical piling, no scour
+% 5 = cylindrical piling, no scour, double height
 
 switch obstacle
     case 0
@@ -79,8 +79,8 @@ switch obstacle
        Lo = sphere_rad*2;
        
  
-    case 5  % piling, smooth bottom, 
-    
+    case 5  % piling, smooth bottom, double height
+       Ly_p = 2;
        x_c = 0.5*Lx_p; %Center of channel (width)
        z_c = 0.5*Lz_p; %Center of channel (length)
        cyl_rad = 0.1*Lx_p; %Piling radius
