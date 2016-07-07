@@ -38,7 +38,7 @@ obstacle = 5;
 % 2 = cylinder, partial height
 % 3 = cylindrical piling with elliptical scour pit
 % 4 = sphere
-% 5 = cylindrical piling, no scour, double height
+% 5 = cylindrical piling, no scour
 
 switch obstacle
     case 0
@@ -79,9 +79,8 @@ switch obstacle
        Lo = sphere_rad*2;
        
  
-    case 5  % piling, smooth bottom, double height
+    case 5  % piling, smooth bottom, 
     
-       Ly_p = 2*Ly_p;
        x_c = 0.5*Lx_p; %Center of channel (width)
        z_c = 0.5*Lz_p; %Center of channel (length)
        cyl_rad = 0.1*Lx_p; %Piling radius
@@ -135,7 +134,7 @@ switch obstacle
          (gcoord(:,2) < y_max));
 
     case 3
-       %% get solid nodes...bottom is thick, top is single plate
+       %% get solid nodes...bottom is thick
        snl = find(gcoord(:,2)<ellip_b); snl =snl(:);
        snl = unique(snl);
 
@@ -161,7 +160,7 @@ switch obstacle
             (gcoord(:,3) - z_c).^2 < sphere_rad*sphere_rad));
         
     case 5
-       %% get solid nodes...bottom is thick, top is single plate
+       %% get solid nodes...bottom is thick
        snl = find(gcoord(:,2)<ellip_b); snl =snl(:);
        snl = unique(snl);
 
@@ -209,7 +208,7 @@ if plot_geom
 %     scatter3(gcoord(onl,1),gcoord(onl,2),gcoord(onl,3),'b.');
      scatter3(gcoord(snl,1),gcoord(snl,2),gcoord(snl,3),'g.'); hold on;
 %     hold off
-    scatter3(gcoord(obst_list,1),gcoord(obst_list,2),gcoord(obst_list,3),'b.');
+ %   scatter3(gcoord(obst_list,1),gcoord(obst_list,2),gcoord(obst_list,3),'b.');
      axis([0 Lx_p 0 Ly_p 0 Lz_p]);
     axis equal
     view([-99 52]);
