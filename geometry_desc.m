@@ -32,7 +32,7 @@ switch fluid
         
 end
 
-obstacle = 6;
+obstacle = 5;
 % 0 = no obstacle
 % 1 = cylinder, bottom to top
 % 2 = cylinder, partial height
@@ -178,7 +178,7 @@ switch obstacle
         
     case 5
        %% get solid nodes...bottom is thick
-       snl = find(gcoord(:,2)<ellip_b); snl =snl(:);
+       snl = find(gcoord(:,2)<2*cyl_rad); snl =snl(:);
        snl = unique(snl);
 
        %% get inlet nodes
@@ -240,20 +240,20 @@ else
 end
 
 %% plot the relevant lattice points to confirm correctness
-if plot_geom
-    figure(1)
+%if plot_geom
+%    figure(1)
 %     scatter3(gcoord(inl,1),gcoord(inl,2),gcoord(inl,3),'r.');
 %     hold on
 %     scatter3(gcoord(onl,1),gcoord(onl,2),gcoord(onl,3),'b.');
-     scatter3(gcoord(snl,1),gcoord(snl,2),gcoord(snl,3),'g.'); hold on;
+ %    scatter3(gcoord(snl,1),gcoord(snl,2),gcoord(snl,3),'g.'); hold on;
 %     hold off
  %   scatter3(gcoord(obst_list,1),gcoord(obst_list,2),gcoord(obst_list,3),'b.');
-     scatter3(gcoord(scourpit,1),gcoord(scourpit,2), gcoord(scourpit,3), 'b.');
-     axis([0 Lx_p 0 Ly_p 0 Lz_p]);
-    axis equal
-    view([-99 52]);
+ %    scatter3(gcoord(scourpit,1),gcoord(scourpit,2), gcoord(scourpit,3), 'b.');
+ %    axis([0 Lx_p 0 Ly_p 0 Lz_p]);
+ %   axis equal
+  %  view([-99 52]);
    
-end
+%end
 
 %% save the data to a *.mat file
 file_name = 'geometry_description.mat';
