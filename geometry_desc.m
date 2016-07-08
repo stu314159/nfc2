@@ -7,7 +7,7 @@ Lx_p = 1;
 Ly_p = 1;
 Lz_p = 8;
 
-Ny_divs = 15;
+Ny_divs = 31;
 
 plot_geom = true;
 
@@ -32,11 +32,13 @@ switch fluid
         
 end
 
-obstacle = 3;
+obstacle = 5;
 % 0 = no obstacle
 % 1 = cylinder, bottom to top
 % 2 = cylinder, partial height
 % 3 = cylindrical piling with elliptical scour pit
+% 4 = sphere
+% 5 = cylindrical piling, no scour, double height
 
 switch obstacle
     case 0
@@ -75,6 +77,23 @@ switch obstacle
        z_c = 0.75*Lz_p;
        sphere_rad = 0.1*Ly_p;
        Lo = sphere_rad*2;
+       
+ 
+    case 5  % piling, smooth bottom, double height
+    
+       Ly_p = 2*Ly_p;
+       x_c = 0.5*Lx_p; %Center of channel (width)
+       z_c = 0.5*Lz_p; %Center of channel (length)
+       cyl_rad = 0.1*Lx_p; %Piling radius
+       Lo = cyl_rad*2;
+
+% 	%Scour Pit Dimensions
+% 	ellip_a = 2*2*cyl_rad; %2x diameter of pile
+ 	ellip_b = 1*2*cyl_rad; %1x diam of pile
+% 	ellip_c = 4*2*cyl_rad; %4x diam of pile
+% 	ellip_x = x_c; %center of pile (width)
+% 	ellip_z = z_c + cyl_rad; %center located at back of pile (length)
+% 	ellip_y = ellip_b; %bottom of ellipse at ym
       
 end
 
@@ -116,7 +135,6 @@ switch obstacle
          (gcoord(:,2) < y_max));
 
     case 3
-
        %% get solid nodes...bottom is thick, top is single plate
        snl = find(gcoord(:,2)<ellip_b); snl =snl(:);
        snl = unique(snl);
@@ -141,6 +159,27 @@ switch obstacle
         
         obst_list = find(((gcoord(:,1) - x_c).^2 + (gcoord(:,2) - y_c).^2 + ...
             (gcoord(:,3) - z_c).^2 < sphere_rad*sphere_rad));
+        
+    case 5
+       %% get solid nodes...bottom is thick, top is single plate
+       snl = find(gcoord(:,2)<ellip_b); snl =snl(:);
+       snl = unique(snl);
+
+       %% get inlet nodes
+       inl = faces.xy_m; 
+       inl = setxor(inl,intersect(inl,snl)); % eliminate solid nodes from inl
+
+       %% get outlet nodes
+	onl = faces.xy_p;
+	onl = setxor(onl,intersect(onl,snl)); %eliminate solid nodes from onl
+
+%        scourpit = find(((gcoord(:,1) - ellip_x).^2/ellip_a.^2) + ((gcoord(:,2)-ellip_y).^2/ellip_b.^2) + ((gcoord(:,3) - ellip_z).^2/ellip_c.^2) <= 1);
+% 
+%       %Remove ellipsoid nodes from bottom of channel.
+%       snl = setxor(snl,intersect(snl,scourpit));
+
+      % add the cylindrical obstacle to the obstacle list
+      obst_list = find(((gcoord(:,1) - x_c).^2 + (gcoord(:,3)-z_c).^2) < cyl_rad*cyl_rad);
 end
 
 % add obstacle nodes to the solid node list
