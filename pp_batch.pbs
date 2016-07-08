@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -A USNAM37752431
+#PBS -q bigmem
+#PBS -l select=1:ncpus=24
+#PBS -l walltime=10:00:00
+#PBS -l ccm=1
+#PBS -N batch_pp
+#PBS -j oe
+#PBS -V
+#PBS -S /bin/bash
+
+cd $PBS_O_WORKDIR
+module load costinit
+module load python
+module load numpy
+module load scipy
+module load mpi4py
+
+aprun -n 24 ./process_lbm_data_mpi.py
+
+
