@@ -60,7 +60,7 @@ input_data.close()
 #u_conv_fact = l_conv_fact/t_conv_fact;
 u_conv_fact = t_conv_fact/l_conv_fact;
 if(rank == 0):
-   print("u_conv_fact = %15.15f \n"%u_conv_fact)
+   print("u_conv_fact = %8.3e \n"%u_conv_fact)
 nnodes = Nx*Ny*Nz
 
 # compute geometric data only once
