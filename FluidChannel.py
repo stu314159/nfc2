@@ -20,6 +20,7 @@ class EmptyChannel:
         """
         self.Lo = Lo
 
+
     def get_Lo(self):
         """
          set Lo if need be ?
@@ -148,7 +149,7 @@ class ConeScourPit(EmptyChannel):
         dist = (X - self.x_c)**2 + (Z - self.z_c)**2;
         cyl_part = list(np.array(np.where( dist < self.cyl_rad**2)).flatten())
 
-        scour_pit = np.array(np.where( (X - x_c_cone)**2 + (Z - z_c_cone)**2 <= ((rad/cone)/(h_cone))**2*(Y - y_c_cone)**2))
+        scour_pit = np.array(np.where( (X - x_c_cone)**2 + (Z - z_c_cone)**2 <= ((self.cyl_rad/cone)/(h_cone))**2*(Y - y_c_cone)**2))
 
         # remove the scour pit from the floor
         obst_list = np.setxor1d(floor_part[:], 
