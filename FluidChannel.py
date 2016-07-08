@@ -178,7 +178,7 @@ class SinglePile(EmptyChannel):
 
     def get_obstList(self,X,Y,Z):
         """
-         return a list of all indices of lattice points within the boundaries of the conical scour pit obstacle. Bed thickness is equal to the diameter of the piling (2x radius)
+         return a list of all indices of lattice points within the boundaries of the bed Bed thickness is equal to the diameter of the piling (2x radius)
 
         """
        
@@ -194,6 +194,44 @@ class SinglePile(EmptyChannel):
         obst_list = np.union1d(floor_part[:],cyl_part[:])
         
         return list(obst_list[:])
+
+class WavyBed(EmptyChannel):
+    """
+    a channel with a single pile, Sin-wave bottom
+    """
+
+    def __init__(self,x_c,z_c,cyl_rad):
+        """
+          constructor giving the x and z coordinates of the piling center along with the radius of the cylindrical piling
+        """
+        self.x_c = x_c
+        self.z_c = z_c
+        self.cyl_rad = cyl_rad
+
+    def get_Lo(self):
+        return self.cyl_rad*2.
+
+    def get_obstList(self,X,Y,Z):
+        """
+         return a list of all indices of lattice points within the boundaries of the bed Bed thickness is equal to the diameter of the piling (2x radius)
+
+        """
+       
+    	#Bed
+	waveh = 0.125
+	wavel = 10        
+	floor_part = np.array(np.where(Y < (waveh*np.sin(wavel*Z) + 2*self.cyl_rad))).flatten()
+	
+	#Piling
+        dist = (X - self.x_c)**2 + (Z - self.z_c)**2;
+        cyl_part = list(np.array(np.where( dist < self.cyl_rad**2)).flatten())
+
+
+        # then add the cylinder
+        obst_list = np.union1d(floor_part[:],cyl_part[:])
+        
+        return list(obst_list[:])
+
 
 def fluid_properties(fluid_str):  
    """
