@@ -114,7 +114,86 @@ class EllipticalScourPit(EmptyChannel):
         
         return list(obst_list[:])
 
+class ConeScourPit(EmptyChannel):
+    """
+    a channel with a conical scour pit determined by the angle of repose of the soil particles (assumed to be river sand, phi=30 deg).  
+    """
 
+    def __init__(self,x_c,z_c,cyl_rad):
+        """
+          constructor giving the x and z coordinates of the scour pit along with the radius of the cylindrical piling
+        """
+        self.x_c = x_c
+        self.z_c = z_c
+        self.cyl_rad = cyl_rad
+
+    def get_Lo(self):
+        return self.cyl_rad*2.
+
+    def get_obstList(self,X,Y,Z):
+        """
+         return a list of all indices of lattice points within the boundaries of the conical scour pit obstacle
+
+        """
+       
+        x_c_cone = self.x_c
+	z_c_cone = self.z_c
+        y_c_cone = 0
+        x_s = 2.25*2*self.cyl_rad
+        rad_cone = x_s + self.cyl_rad
+	h_cone = rad_cone*0.57735
+
+        floor_part = np.array(np.where(Y < h_cone)).flatten()
+
+        dist = (X - self.x_c)**2 + (Z - self.z_c)**2;
+        cyl_part = list(np.array(np.where( dist < self.cyl_rad**2)).flatten())
+
+        scour_pit = np.array(np.where( (X - x_c_cone)**2 + (Z - z_c_cone)**2 <= ((rad/cone)/(h_cone))**2*(Y - y_c_cone)**2))
+
+        # remove the scour pit from the floor
+        obst_list = np.setxor1d(floor_part[:], 
+                        np.intersect1d(floor_part[:],scour_pit[:]))
+
+
+        # then add the cylinder
+        obst_list = np.union1d(obst_list[:],cyl_part[:])
+        
+        return list(obst_list[:])
+
+class SinglePile(EmptyChannel):
+    """
+    a channel with a single pile, no scour
+    """
+
+    def __init__(self,x_c,z_c,cyl_rad):
+        """
+          constructor giving the x and z coordinates of the piling center along with the radius of the cylindrical piling
+        """
+        self.x_c = x_c
+        self.z_c = z_c
+        self.cyl_rad = cyl_rad
+
+    def get_Lo(self):
+        return self.cyl_rad*2.
+
+    def get_obstList(self,X,Y,Z):
+        """
+         return a list of all indices of lattice points within the boundaries of the conical scour pit obstacle. Bed thickness is equal to the diameter of the piling (2x radius)
+
+        """
+       
+    	#Bed
+        floor_part = np.array(np.where(Y < 2*self.cyl_rad)).flatten()
+	
+	#Piling
+        dist = (X - self.x_c)**2 + (Z - self.z_c)**2;
+        cyl_part = list(np.array(np.where( dist < self.cyl_rad**2)).flatten())
+
+
+        # then add the cylinder
+        obst_list = np.union1d(floor_part[:],cyl_part[:])
+        
+        return list(obst_list[:])
 
 def fluid_properties(fluid_str):  
    """

@@ -25,8 +25,14 @@ import FluidChannel as fc
 #                    obst = fc.SphereObstruction(r = 0.2, x_c = 0.5, y_c = 0.5, z_c = 5.))
 #openChannel5.write_bc_vtk()
 
+<<<<<<< HEAD
 openChannel6 = fc.FluidChannel(Lx_p = 1., Ly_p = 2., Lz_p = 8.,
                    N_divs = 31,
                    obst = fc.EllipticalScourPit(0.5, 4., 0.1))
+=======
+openChannel6 = fc.FluidChannel(Lx_p = 1., Ly_p = 1., Lz_p = 8.,
+                   N_divs = 13,
+                   obst = fc.ConeScourPit(0.5, 4., 0.1))
+>>>>>>> 0edfdcc6e89ff5b47882225c7d2194ecc108bd6e
 openChannel6.write_bc_vtk()
 openChannel6.write_mat_file()
