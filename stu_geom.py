@@ -11,7 +11,7 @@ d_golf_ball = 0.0427 # meters
 aLx_p = 0.16 
 aLy_p = 0.16
 aLz_p = 0.3
-aN_divs = 60
+aN_divs = 80
 
 # construct the basic sphere
 sphereB = fc.SphereObstruction(d_golf_ball/2., aLx_p/2., aLy_p/2., aLz_p/2.)
