@@ -96,8 +96,37 @@ class GolfBall(EmptyChannel):
            return the obst list for the golf ball
         """
         obst_list1 = self.sphere.get_obstList(X,Y,Z)
+        el_angles = np.linspace(0.,np.pi,self.N_e)
+        
+        x = np.array(X); y = np.array(Y); z = np.array(Z);
+        print "removing the dimples"
+        # start removing dimples
+        iel = 0;
+        for el in el_angles:
+            iel+=1
+        # for each elevation, we will get a different number of dimples
+            N_az_el = np.floor(self.N_a*np.sin(el))+1;
+            if N_az_el == 1:
+                N_az_el+=1
+            
+            az_angles = np.linspace(0.,2.*np.pi, N_az_el, endpoint = False)
+            print "removing dimples in elevation %g of %g" % (iel, len(el_angles))
+            iaz = 0;
+            for az in az_angles:
+              iaz+=1
+              print "removing dimple %g of %g on this elevation" % (iaz,len(az_angles))
+              # get coordinates of the center of the spherical dimple
+              y_c_d = self.sphere.y_c + self.rd_dimp*np.cos(el);
+              z_c_d = self.sphere.z_c + self.rd_dimp*np.sin(az)*np.sin(el);
+              x_c_d = self.sphere.x_c + self.rd_dimp*np.cos(az)*np.sin(el);
+ 
+              dist = (x - x_c_d)**2 + (y - y_c_d)**2 + (z - z_c_d)**2
+              dimples = np.where(dist <= ((self.d_dimp/2.))**2)
+              obst_list1 = np.setxor1d(obst_list1[:],
+                  np.intersect1d(obst_list1[:],dimples[:]))
+             
 
-        return obst_list1[:] # test this first...
+        return obst_list1[:] 
         
 
 
