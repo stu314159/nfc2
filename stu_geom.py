@@ -1,6 +1,40 @@
 import FluidChannel as fc
+import numpy as np
 
-ocStu = fc.FluidChannel(Lx_p = 2., Ly_p = 2., Lz_p = 8.,
-                        N_divs = 19,
-                        obst = fc.EllipticalScourPit(1.0,4.,0.1))
-ocStu.write_mat_file()
+#ocStu = fc.FluidChannel(Lx_p = 2., Ly_p = 2., Lz_p = 8.,
+#                        N_divs = 19,
+#                        obst = fc.EllipticalScourPit(1.0,4.,0.1))
+#ocStu.write_mat_file()
+
+# geometric parameters for the spherical portion of the golf ball
+d_golf_ball = 0.0427 # meters
+aLx_p = 0.2 
+aLy_p = 0.2
+aLz_p = 1.
+aN_divs = 20
+
+# construct the basic sphere
+sphereB = fc.SphereObstruction(d_golf_ball/2., aLx_p/2., aLy_p/2., aLz_p/2.)
+
+d_dimp = d_golf_ball/10.
+
+# set the dimply 75% of its radius from surface
+rd_dimp = (d_golf_ball/2.)+(d_dimp/2.)*0.75 
+circ_golf_ball = np.pi*d_golf_ball;
+N_dimp_max = np.floor(circ_golf_ball/d_dimp)
+
+N_e = int(N_dimp_max*0.9)
+# I would really like N_e to be an even number.  If it is odd,
+# I will just subtract 1:
+if ((N_e % 2 == 1) and (N_e > 1)):
+    N_e -= 1
+N_a = N_e # for now, assume they are the same density in each direction
+
+# construct the golf ball
+golfB = fc.GolfBall(sphereB,d_dimp,rd_dimp,N_e,N_a)
+
+golfChannel = fc.FluidChannel(Lx_p = aLx_p,Ly_p = aLy_p,Lz_p = aLz_p,
+                               N_divs = aN_divs, obst = golfB)
+
+golfChannel.write_bc_vtk()
+

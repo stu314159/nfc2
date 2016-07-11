@@ -33,6 +33,7 @@ class EmptyChannel:
         """
         return []
 
+
 class SphereObstruction(EmptyChannel):
     """
      a channel with a sphere obstruction
@@ -64,6 +65,42 @@ class SphereObstruction(EmptyChannel):
        
         return list(np.where(dist < self.r**2))
        
+
+class GolfBall(EmptyChannel):
+    """
+     a channel with a golf ball obstacle
+    """
+
+    def __init__(self,SO,d_dimp,rd_dimp,N_e,N_a):
+        """
+           SO - pass in a sphericle obstacle as one of the arguments
+           d_dimp = diameter of the dimples on the golf ball
+           rd_dimp = radial distance of the center of the dimple from the center
+                     of the golf ball
+           N_e = number of dimples along all [0,pi] elevation angles 
+           N_e = number of dimples along all [0,2pi] azimuthal angles
+
+        """
+        self.sphere = SO;
+        self.d_dimp = d_dimp;
+        self.rd_dimp = rd_dimp;
+        self.N_e = N_e;
+        self.N_a = N_a;
+
+    def get_Lo(self):
+        return self.sphere.get_Lo()
+
+
+    def get_obstList(self,X,Y,Z):
+        """
+           return the obst list for the golf ball
+        """
+        obst_list1 = self.sphere.get_obstList(X,Y,Z)
+
+        return obst_list1[:] # test this first...
+        
+
+
 class EllipticalScourPit(EmptyChannel):
     """
      a channel with an elliptical scour pit with prescribed properties
