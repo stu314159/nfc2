@@ -28,5 +28,12 @@ cp $PBS_O_WORKDIR/pp_batch.pbs .
 fi
 aprun -B ./turbineSim 
 
+# maybe a bad idea
+## go ahead and copy the restart file back to the working directory
+#if [-f $PBS_O_WORKDIR/restart.b_dat ]; then
+#rm $PBS_O_WORKDIR/restart.b_dat
+#mv ./restart.b_dat $PBS_O_WORKDIR/.
+#fi
+
 # give this a try
 qsub pp_batch.pbs  
