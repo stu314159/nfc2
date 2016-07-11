@@ -2,9 +2,9 @@
 #PBS -A USNAM37752431
 #PBS -q gpu
 #PBS -l select=16:ncpus=10:accelerator_model=Tesla_K40s:mpiprocs=1
-#PBS -l walltime=03:00:00
+#PBS -l walltime=06:00:00
 #PBS -l ccm=1
-#PBS -N el_scour_re800
+#PBS -N Exp_Re1500
 #PBS -j oe
 #PBS -V
 #PBS -S /bin/bash
