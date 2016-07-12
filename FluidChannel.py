@@ -324,8 +324,7 @@ class FluidChannel:
         fluid='water', 
         obst=EmptyChannel(1.),
         N_divs = 5,
-        wallList=['left','right','top','bottom']
-        geom_filename = 'geometry_description'):
+        wallList=['left','right','top','bottom']):
         """
          class constructor
 
@@ -336,7 +335,7 @@ class FluidChannel:
         self.N_divs = N_divs
         self.fluid = fluid
         self.obst = obst
-        self.geom_filename = geom_filename
+        
 
         # generate the geometry
 
@@ -389,7 +388,7 @@ class FluidChannel:
         self.obst_list = np.setxor1d(self.obst_list[:],
             np.intersect1d(self.obst_list[:],self.solid_list[:]))
        
-    def write_mat_file(self):
+    def write_mat_file(self, geom_filename):
         """
           generate the mat file to interface with genInput.py.  Needs to save
           Lx_p, Ly_p, Lz_p, Lo, Ny_divs, rho_p, nu_p, snl, inl and onl.
@@ -409,7 +408,7 @@ class FluidChannel:
         mat_dict['inl'] = list(self.inlet_list[:])
         mat_dict['onl'] = list(self.outlet_list[:])
 
-        scipy.io.savemat(self.geom_filename,mat_dict)
+        scipy.io.savemat(geom_filename,mat_dict)
 
 
     
