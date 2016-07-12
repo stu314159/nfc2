@@ -324,7 +324,8 @@ class FluidChannel:
         fluid='water', 
         obst=EmptyChannel(1.),
         N_divs = 5,
-        wallList=['left','right','top','bottom']):
+        wallList=['left','right','top','bottom']
+        geom_filename = 'geometry_description'):
         """
          class constructor
 
@@ -335,6 +336,7 @@ class FluidChannel:
         self.N_divs = N_divs
         self.fluid = fluid
         self.obst = obst
+        self.geom_filename = geom_filename
 
         # generate the geometry
 
@@ -407,7 +409,7 @@ class FluidChannel:
         mat_dict['inl'] = list(self.inlet_list[:])
         mat_dict['onl'] = list(self.outlet_list[:])
 
-        scipy.io.savemat('geometry_description',mat_dict)
+        scipy.io.savemat(self.geom_filename,mat_dict)
 
 
     
