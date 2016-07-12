@@ -25,9 +25,34 @@ import FluidChannel as fc
 #                    obst = fc.SphereObstruction(r = 0.2, x_c = 0.5, y_c = 0.5, z_c = 5.))
 #openChannel5.write_bc_vtk()
 
-
-openChannel6 = fc.FluidChannel(Lx_p = 2., Ly_p = 2., Lz_p = 8.,
-                   N_divs = 31,
-                   obst = fc.PipeContract(1.8,0.8))
+#PipeExpand requires Diam In, Diam Out
+#openChannel6 = fc.FluidChannel(wallList = [],
+#Lx_p = 2., Ly_p = 2., Lz_p = 8.,
+#N_divs = 61,
+#obst = fc.PipeExpand(0.8,1.8))
 #openChannel6.write_bc_vtk()
-openChannel6.write_mat_file()
+#openChannel6.write_mat_file()
+
+#PipeContract requires Diam In, Diam Out
+#openChannel7 = fc.FluidChannel(wallList = [],
+#Lx_p = 2., Ly_p = 2., Lz_p = 8.,
+#N_divs = 61,
+#obst = fc.PipeContract(1.8,0.8))
+#openChannel7.write_bc_vtk()
+#openChannel7.write_mat_file()
+
+#WavyBed requires x_c, z_c, cyl_rad
+openChannel8 = fc.FluidChannel(wallList = ['bottom','top','left','right'],
+Lx_p = 1., Ly_p = 1., Lz_p = 8.,
+N_divs = 41,
+obst = fc.WavyBed(0.5,4.,0.1))
+#openChannel8.write_bc_vtk()
+openChannel8.write_mat_file()
+
+#PipeTurn requires diam in and diam out
+#openChannel9 = fc.FluidChannel(wallList = [],
+#Lx_p = 2., Ly_p = 5., Lz_p = 5.,
+#N_divs = 51,
+#obst = fc.PipeTurn(0.5,0.5))
+#openChannel9.write_bc_vtk()
+#openChannel9.write_mat_file()

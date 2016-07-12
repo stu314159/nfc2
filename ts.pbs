@@ -1,10 +1,10 @@
 #!/bin/bash
 #PBS -A USNAM37752431
 #PBS -q gpu
-#PBS -l select=16:ncpus=10:accelerator_model=Tesla_K40s:mpiprocs=1
-#PBS -l walltime=06:00:00
+#PBS -l select=8:ncpus=10:accelerator_model=Tesla_K40s:mpiprocs=1
+#PBS -l walltime=05:00:00
 #PBS -l ccm=1
-#PBS -N Exp_Re1500
+#PBS -N Wav_Re1000
 #PBS -j oe
 #PBS -V
 #PBS -S /bin/bash
@@ -27,3 +27,13 @@ cp $PBS_O_WORKDIR/restart.b_dat .
 cp $PBS_O_WORKDIR/pp_batch.pbs .
 fi
 aprun -B ./turbineSim 
+
+# maybe a bad idea
+## go ahead and copy the restart file back to the working directory
+#if [-f $PBS_O_WORKDIR/restart.b_dat ]; then
+#rm $PBS_O_WORKDIR/restart.b_dat
+#mv ./restart.b_dat $PBS_O_WORKDIR/.
+#fi
+
+# give this a try
+qsub pp_batch.pbs   
