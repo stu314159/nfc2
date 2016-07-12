@@ -1,10 +1,10 @@
 #!/bin/bash
 #PBS -A USNAM37752431
 #PBS -q gpu
-#PBS -l select=8:ncpus=10:accelerator_model=Tesla_K40s:mpiprocs=1
-#PBS -l walltime=05:00:00
+#PBS -l select=12:ncpus=10:accelerator_model=Tesla_K40s:mpiprocs=1
+#PBS -l walltime=03:00:00
 #PBS -l ccm=1
-#PBS -N Wav_Re1000
+#PBS -N sphere50k
 #PBS -j oe
 #PBS -V
 #PBS -S /bin/bash
@@ -24,8 +24,9 @@ cp $PBS_O_WORKDIR/process_lbm_data_mpi.py .
 cp $PBS_O_WORKDIR/vtkHelper.py .
 if [ -f $PBS_O_WORKDIR/restart.b_dat ]; then
 cp $PBS_O_WORKDIR/restart.b_dat .
-cp $PBS_O_WORKDIR/pp_batch.pbs .
 fi
+cp $PBS_O_WORKDIR/pp_batch.pbs .
+
 aprun -B ./turbineSim 
 
 # maybe a bad idea

@@ -33,6 +33,7 @@ class EmptyChannel:
         """
         return []
 
+
 class SphereObstruction(EmptyChannel):
     """
      a channel with a sphere obstruction
@@ -64,6 +65,71 @@ class SphereObstruction(EmptyChannel):
        
         return list(np.where(dist < self.r**2))
        
+
+class GolfBall(EmptyChannel):
+    """
+     a channel with a golf ball obstacle
+    """
+
+    def __init__(self,SO,d_dimp,rd_dimp,N_e,N_a):
+        """
+           SO - pass in a sphericle obstacle as one of the arguments
+           d_dimp = diameter of the dimples on the golf ball
+           rd_dimp = radial distance of the center of the dimple from the center
+                     of the golf ball
+           N_e = number of dimples along all [0,pi] elevation angles 
+           N_e = number of dimples along all [0,2pi] azimuthal angles
+
+        """
+        self.sphere = SO;
+        self.d_dimp = d_dimp;
+        self.rd_dimp = rd_dimp;
+        self.N_e = N_e;
+        self.N_a = N_a;
+
+    def get_Lo(self):
+        return self.sphere.get_Lo()
+
+
+    def get_obstList(self,X,Y,Z):
+        """
+           return the obst list for the golf ball
+        """
+        obst_list1 = self.sphere.get_obstList(X,Y,Z)
+        el_angles = np.linspace(0.,np.pi,self.N_e)
+        
+        x = np.array(X); y = np.array(Y); z = np.array(Z);
+        print "removing the dimples"
+        # start removing dimples
+        iel = 0;
+        for el in el_angles:
+            iel+=1
+        # for each elevation, we will get a different number of dimples
+            N_az_el = np.floor(self.N_a*np.sin(el))+1;
+            if N_az_el == 1:
+                N_az_el+=1
+            
+            az_angles = np.linspace(0.,2.*np.pi, N_az_el, endpoint = False)
+            print "removing dimples in elevation %g of %g" % (iel, len(el_angles))
+            iaz = 0;
+            for az in az_angles:
+              iaz+=1
+              print "removing dimple %g of %g on this elevation" % (iaz,len(az_angles))
+              # get coordinates of the center of the spherical dimple
+              y_c_d = self.sphere.y_c + self.rd_dimp*np.cos(el);
+              z_c_d = self.sphere.z_c + self.rd_dimp*np.sin(az)*np.sin(el);
+              x_c_d = self.sphere.x_c + self.rd_dimp*np.cos(az)*np.sin(el);
+ 
+              dist = (x - x_c_d)**2 + (y - y_c_d)**2 + (z - z_c_d)**2
+              dimples = np.where(dist <= ((self.d_dimp/2.))**2)
+              obst_list1 = np.setxor1d(obst_list1[:],
+                  np.intersect1d(obst_list1[:],dimples[:]))
+             
+
+        return obst_list1[:] 
+        
+
+
 class EllipticalScourPit(EmptyChannel):
     """
      a channel with an elliptical scour pit with prescribed properties
@@ -441,6 +507,7 @@ class FluidChannel:
         self.N_divs = N_divs
         self.fluid = fluid
         self.obst = obst
+        
 
         # generate the geometry
 
@@ -493,7 +560,7 @@ class FluidChannel:
         self.obst_list = np.setxor1d(self.obst_list[:],
             np.intersect1d(self.obst_list[:],self.solid_list[:]))
        
-    def write_mat_file(self):
+    def write_mat_file(self, geom_filename):
         """
           generate the mat file to interface with genInput.py.  Needs to save
           Lx_p, Ly_p, Lz_p, Lo, Ny_divs, rho_p, nu_p, snl, inl and onl.
@@ -513,7 +580,7 @@ class FluidChannel:
         mat_dict['inl'] = list(self.inlet_list[:])
         mat_dict['onl'] = list(self.outlet_list[:])
 
-        scipy.io.savemat('geometry_description',mat_dict)
+        scipy.io.savemat(geom_filename,mat_dict)
 
 
     

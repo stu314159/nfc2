@@ -17,6 +17,7 @@ Cs = Turbulence model parameter
 Restart_flag = 1, this is a restart; an appropriate restart data file must be available.  0 = no restart
 Some suggested problem inputs:
 
+Geom_name: geometry_description.mat
 Num_ts: 10000
 ts_rep_freq: 1000
 Warmup_ts: 0
@@ -35,6 +36,7 @@ followed by a comparatively short number of time steps during which you collect 
 
 # build input parser
 parser = argparse.ArgumentParser(prog='genInput.py',description='Process LBM input arguments')
+parser.add_argument('geom_filename',type=str)
 parser.add_argument('Num_ts',type=int)
 parser.add_argument('ts_rep_freq',type=int)
 parser.add_argument('Warmup_ts',type=int)
@@ -47,6 +49,7 @@ parser.add_argument('Restart_flag',type=int)
 args = parser.parse_args()
 
 # assign to required variables
+geom_filename = args.geom_filename
 Num_ts = args.Num_ts
 ts_rep_freq = args.ts_rep_freq
 Warmup_ts = args.Warmup_ts
@@ -61,7 +64,7 @@ Restart_flag = args.Restart_flag
 
 #----You should not have to edit anything below this line -------------------
 
-geom_input = scipy.io.loadmat('geometry_description.mat')
+geom_input = scipy.io.loadmat(geom_filename)
 # overall domain dimensions
 Lx_p = float(geom_input['Lx_p'])
 Ly_p = float(geom_input['Ly_p'])
