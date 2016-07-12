@@ -4,7 +4,7 @@
 #PBS -l select=12:ncpus=10:accelerator_model=Tesla_K40s:mpiprocs=1
 #PBS -l walltime=03:00:00
 #PBS -l ccm=1
-#PBS -N golfBall100
+#PBS -N sphere50k
 #PBS -j oe
 #PBS -V
 #PBS -S /bin/bash
