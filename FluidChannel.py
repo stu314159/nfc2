@@ -220,7 +220,7 @@ class WavyBed(EmptyChannel):
        
     	#Bed
 	waveh = 0.125
-	wavel = 10        
+	wavel = 5        
 	floor_part = np.array(np.where(Y < (waveh*np.sin(wavel*Z) + 2*self.cyl_rad))).flatten()
 	
 	#Piling
@@ -304,21 +304,21 @@ class PipeExpand(EmptyChannel):
         """
        #Pipe in - find all points exterior of small
 	pipe_in = np.array(np.where((X - 1)**2 + (Y - 1)**2 > (self.diam_in/2)**2)).flatten()
-	pipe_in_stop = np.array(np.where(Z <= 3 + 0.5*(self.diam_out - self.diam_in))).flatten()
+	pipe_in_stop = np.array(np.where(Z <= 1.5 + 0.5*(self.diam_out - self.diam_in))).flatten()
 	pipe_in = np.intersect1d(pipe_in[:],pipe_in_stop[:])
 
 	#Expansion - find all points exterior of expansion
 	r_cone = self.diam_in
 	h_cone = self.diam_in	
-	expansion = np.array(np.where((X - 1)**2 + (Y - 1)**2 > (r_cone/h_cone)**2*(Z - 3)**2)).flatten()
-	expansion_start = np.array(np.where(Z >= 3 + 0.5*(self.diam_out - self.diam_in)))
+	expansion = np.array(np.where((X - 1)**2 + (Y - 1)**2 > (r_cone/h_cone)**2*(Z - 1.5)**2)).flatten()
+	expansion_start = np.array(np.where(Z >= 1.5 + 0.5*(self.diam_out - self.diam_in)))
 	#expansion_stop = np.array(np.where(Z <= 4)).flatten()
 	expansion = np.intersect1d(expansion[:],expansion_start[:])
 	#expansion = np.intersect1d(expansion[:],expansion_stop[:])
 
 	#Pipe out - final all points exterior of smaller pipe
 	pipe_out = np.array(np.where((X - 1)**2 + (Y - 1)**2 > (self.diam_out/2)**2)).flatten()
-	pipe_out_start = np.array(np.where(Z >= 3 + 0.5*(self.diam_in - self.diam_out))).flatten()
+	pipe_out_start = np.array(np.where(Z >= 1.5 + 0.5*(self.diam_in - self.diam_out))).flatten()
 	pipe_out = np.intersect1d(pipe_out[:],pipe_out_start[:])
 
 
@@ -402,9 +402,177 @@ class PipeTurn(EmptyChannel):
 
 	obst_list = pipe[:]
 
-       
         return list(obst_list[:])
 
+class PipeOut(EmptyChannel):
+    """
+  
+    """
+
+    def __init__(self,diam_in,length_in):
+        """
+        defines the diameter and length (z axis) of pipe leading to open area
+        """
+        self.diam_in = diam_in
+	self.length_in = length_in
+
+    def get_Lo(self):
+        return self.diam_in
+
+    def get_obstList(self,X,Y,Z):
+        """
+   Define solid areas around pipe.  Everything else will be open.  Ensure coordinates for center of circle match center of Lx-Ly.
+        """
+       #Pipe In
+	pipe_in = np.array(np.where((X - 0.5*(4))**2 + (Y - 0.5*(4))**2 >= (0.5*self.diam_in)**2)).flatten()
+	pipe_in_stop = np.array(np.where(Z <= self.length_in)).flatten()
+	pipe_in = np.intersect1d(pipe_in[:],pipe_in_stop[:])
+
+
+	obst_list = pipe_in[:]
+
+        return list(obst_list[:])
+
+class Butterfly(EmptyChannel):
+    """
+  
+    """
+
+    def __init__(self,diam):
+        """
+          constructor identifying pipe diameter.  Must be a 1 diam pipe inside a 1.2 x 1.2 x 8 channel.  Valve center at z = 3.
+        """
+        self.diam = diam
+	
+
+    def get_Lo(self):
+        return self.diam
+
+    def get_obstList(self,X,Y,Z):
+        """
+   Define solid areas
+
+        """
+
+	#Pipe
+	pipe = np.array(np.where((X - 0.6)**2 + (Y - 0.6)**2 >= 0.5**2)).flatten()
+
+	#Seat
+	seat = np.array(np.where((X - 0.6)**2 + (Y - 0.6)**2 >= 0.42**2)).flatten()
+	seat_start = np.array(np.where(Z >= 2.975)).flatten()
+	seat_stop = np.array(np.where(Z <= 3.025)).flatten()
+	seat = np.intersect1d(seat[:],seat_start[:])
+	seat = np.intersect1d(seat[:],seat_stop[:])
+
+	#Pivot
+	pivot = np.array(np.where((X - 0.6)**2 + (Z - 3)**2 <= 0.075**2)).flatten()
+
+	#Front Disc
+	front_disc = np.array(np.where((Y - 0.6)**2 + (Z - 3)**2 <= 0.5**2)).flatten()
+	front_disc_stop = np.array(np.where(Z <= 3.0)).flatten()
+	front_disc_x_min = np.array(np.where(X >= 0.525)).flatten()
+	front_disc_x_max = np.array(np.where(X <= 0.575)).flatten()
+
+	front_disc = np.intersect1d(front_disc[:],front_disc_stop[:])
+	front_disc = np.intersect1d(front_disc[:],front_disc_x_min[:])
+	front_disc = np.intersect1d(front_disc[:],front_disc_x_max[:])
+
+	#Back Disc
+	back_disc = np.array(np.where((Y - 0.6)**2 + (Z - 3)**2 <= 0.5**2)).flatten()
+	back_disc_start = np.array(np.where(Z >= 3.0)).flatten()
+	back_disc_x_min = np.array(np.where(X >= 0.625)).flatten()
+	back_disc_x_max = np.array(np.where(X <= 0.675)).flatten()
+
+	back_disc = np.intersect1d(back_disc[:],back_disc_start[:])
+	back_disc = np.intersect1d(back_disc[:],back_disc_x_min[:])
+	back_disc = np.intersect1d(back_disc[:],back_disc_x_max[:])
+
+	#Put the pieces together
+
+	valve = np.union1d(pipe[:],seat[:])
+	valve = np.union1d(valve[:],pivot[:])
+	valve = np.union1d(valve[:],front_disc[:])
+	valve = np.union1d(valve[:],back_disc[:])
+	
+	obst_list = valve[:]
+
+        return list(obst_list[:])
+
+class Tee(EmptyChannel):
+    """
+  
+    """
+
+    def __init__(self,diam_1,diam_2):
+        """
+        Constructor identifying the diameters of the two pipes.  Pipe 1 runs straight through from Z_min to Z_max.  Pipe 2 tees off and runs parallel to Pipe 1.  Pipe 1 enters/exits z planes at y = 1.  Pipe 2 runs at y = 3.  Assumes dimensions of space (X,Y,Z) is (2,4,8).
+        """
+        self.diam_1 = diam_1
+	self.diam_2 = diam_2
+	
+
+    def get_Lo(self):
+        return self.diam_1
+
+    def get_obstList(self,X,Y,Z):
+        """
+   Define solid areas
+
+        """
+
+	#Pipe 1
+	pipe_1 = np.array(np.where((X - 1)**2 + (Y - 1)**2 <= (self.diam_1/2)**2)).flatten()
+
+	#Pipe 2 Tee Off
+	tee_1 = np.array(np.where((X - 1)**2 + (Z - 1.5)**2 <= (self.diam_2/2)**2)).flatten()
+	tee_1_start = np.array(np.where(Y >= 1)).flatten()
+	tee_1_end = np.array(np.where(Y <= 3 - 0.5*self.diam_2)).flatten()
+	tee_1 = np.intersect1d(tee_1[:],tee_1_start[:])
+	tee_1 = np.intersect1d(tee_1[:],tee_1_end[:])
+
+	#Pipe 2 Tee Off Globe.  Need to write this if Pipe 2 > Pipe 1
+	#pipe_2_globe_1 = 
+
+	#Pipe 2 Elbow 1
+	elbow_1 = np.array(np.where((self.diam_2/2 - np.sqrt((Y - (3 - self.diam_2/2))**2 + (Z -(1.5 + self.diam_2/2))**2))**2 + (X - 1)**2 <= (self.diam_2/2)**2)).flatten()
+	elbow_1_start = np.array(np.where(Y >= 3- 0.5*self.diam_2)).flatten()
+	elbow_1_stop = np.array(np.where(Z <= 1.5 + self.diam_2/2)).flatten()
+	elbow_1 = np.intersect1d(elbow_1[:],elbow_1_start[:])
+	elbow_1 = np.intersect1d(elbow_1[:],elbow_1_stop[:])
+
+
+	#Pipe 2
+	pipe_2 = np.array(np.where((X - 1)**2 + (Y - 3)**2 <= (self.diam_2/2)**2)).flatten()
+	pipe_2_start = np.array(np.where(Z >= 1.5 + self.diam_2/2)).flatten()
+	pipe_2_stop = np.array(np.where(Z <= 5 - self.diam_2/2)).flatten()
+	pipe_2 = np.intersect1d(pipe_2[:],pipe_2_start[:])
+	pipe_2 = np.intersect1d(pipe_2[:],pipe_2_stop[:])
+
+	#Pipe 2 Elbow 2
+	elbow_2 = np.array(np.where((self.diam_2/2 - np.sqrt((Y - (3 - self.diam_2/2))**2 + (Z -(5- self.diam_2/2))**2))**2 + (X - 1)**2 <= (self.diam_2/2)**2)).flatten()
+	elbow_2_start = np.array(np.where(Y >= 3- 0.5*self.diam_2)).flatten()
+	elbow_2_stop = np.array(np.where(Z >= 5- self.diam_2/2)).flatten()
+	elbow_2 = np.intersect1d(elbow_2[:],elbow_2_start[:])
+	elbow_2 = np.intersect1d(elbow_2[:],elbow_2_stop[:])
+
+	#Pipe 2 Tee In
+	tee_2 = np.array(np.where((X - 1)**2 + (Z - 5)**2 <= (self.diam_2/2)**2)).flatten()
+	tee_2_start = np.array(np.where(Y >= 1)).flatten()
+	tee_2_end = np.array(np.where(Y <= 3 - 0.5*self.diam_2)).flatten()
+	tee_2 = np.intersect1d(tee_2[:],tee_2_start[:])
+	tee_2 = np.intersect1d(tee_2[:],tee_2_end[:])
+
+	#Put the pieces together
+	pipe = np.union1d(pipe_1[:],tee_1[:])
+	pipe = np.union1d(pipe[:],elbow_1[:])
+	pipe = np.union1d(pipe[:],pipe_2[:])
+	pipe = np.union1d(pipe[:],elbow_2[:])
+	pipe = np.union1d(pipe[:],tee_2[:])
+	
+	
+	obst_list = pipe[:]
+
+        return list(obst_list[:])
 
 def fluid_properties(fluid_str):  
    """
