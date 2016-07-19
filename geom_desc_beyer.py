@@ -50,12 +50,12 @@ import FluidChannel as fc
 #openChannel8.write_mat_file()
 
 #PipeTurn requires pipe diam = 0.5 = Lo
-openChannel9 = fc.FluidChannel(wallList = [],
-Lx_p = 2., Ly_p = 5., Lz_p = 5.,
-N_divs = 61,
-obst = fc.PipeTurn(0.5)
+#openChannel9 = fc.FluidChannel(wallList = [],
+#Lx_p = 2., Ly_p = 5., Lz_p = 5.,
+#N_divs = 61,
+#obst = fc.PipeTurn(0.5)
 #openChannel9.write_bc_vtk()
-openChannel9.write_mat_file('Turn')
+#openChannel9.write_mat_file('Turn')
 
 #PipeOut requires diam in and length in.  Assumes channel Lx = 4 and Ly = 4
 #openChannel10 = fc.FluidChannel(wallList = [],
@@ -80,3 +80,5 @@ openChannel9.write_mat_file('Turn')
     #obst = fc.Tee(1.,0.5))
 #openChannel12.write_bc_vtk()
 #openChannel12.write_mat_file('Tee_Change')
+
+

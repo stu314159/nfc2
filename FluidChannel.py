@@ -559,6 +559,7 @@ class Butterfly(EmptyChannel):
 
         return list(obst_list[:])
 
+
 class Tee(EmptyChannel):
     """
   establishes a single large pipe with a "tee" into a smaller pipe that loops up and around before rejoining the main line.  The Main line undergoes a contraction after the tee but before the rejoining secondary line.  diam_2 should be smaller than diam_1.
