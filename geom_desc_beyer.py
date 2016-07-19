@@ -49,13 +49,13 @@ import FluidChannel as fc
 #openChannel8.write_bc_vtk()
 #openChannel8.write_mat_file()
 
-#PipeTurn requires diam in and diam out to set Lo...using 0.5.
-#openChannel9 = fc.FluidChannel(wallList = [],
-#Lx_p = 2., Ly_p = 5., Lz_p = 5.,
-#N_divs = 61,
-#obst = fc.PipeTurn(0.5,0.5))
+#PipeTurn requires pipe diam = 0.5 = Lo
+openChannel9 = fc.FluidChannel(wallList = [],
+Lx_p = 2., Ly_p = 5., Lz_p = 5.,
+N_divs = 61,
+obst = fc.PipeTurn(0.5)
 #openChannel9.write_bc_vtk()
-#openChannel9.write_mat_file()
+openChannel9.write_mat_file('Turn')
 
 #PipeOut requires diam in and length in.  Assumes channel Lx = 4 and Ly = 4
 #openChannel10 = fc.FluidChannel(wallList = [],
@@ -67,16 +67,16 @@ import FluidChannel as fc
 
 #Butterfly requires diam.  Assumes Lx = 1.2, Ly = 1.2, Lz = 8 (z can vary).  Diam must be equal to 1.0
 #openChannel11 = fc.FluidChannel(wallList = [],
-#    Lx_p = 1.2, Ly_p = 1.2, Lz_p = 8.,
-#    N_divs = 71,
-#    obst = fc.Butterfly(1.0))
+#Lx_p = 1.2, Ly_p = 1.2, Lz_p = 8.,
+    #N_divs = 11,
+    #obst = fc.Butterfly(1.0))
 #openChannel11.write_bc_vtk()
 #openChannel11.write_mat_file()
 
 #Tee pipes requires a diameter for pipe 1 and a diameter for pipe 2.  Assumes Lx = 2, Ly = 4, Lz = 8.  
-openChannel12 = fc.FluidChannel(wallList = [],
-    Lx_p = 2., Ly_p = 4., Lz_p = 8.,
-    N_divs = 31,
-    obst = fc.Tee(1.,0.5))
-openChannel12.write_bc_vtk()
-#openChannel12.write_mat_file()
+#openChannel12 = fc.FluidChannel(wallList = [],
+   # Lx_p = 2., Ly_p = 4., Lz_p = 8.,
+    #N_divs = 61,
+    #obst = fc.Tee(1.,0.5))
+#openChannel12.write_bc_vtk()
+#openChannel12.write_mat_file('Tee_Change')

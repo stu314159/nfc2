@@ -2,7 +2,6 @@
 """
 Class implementation file for the Python class FluidChannel
 Depends on vtkHelper module for geometry visualization functionality
-
 """
 import math
 import argparse
@@ -32,6 +31,7 @@ class EmptyChannel:
           for an empty channel - no obstacles 
         """
         return []
+
 
 class SphereObstruction(EmptyChannel):
     """
@@ -64,6 +64,70 @@ class SphereObstruction(EmptyChannel):
        
         return list(np.where(dist < self.r**2))
        
+
+class GolfBall(EmptyChannel):
+    """
+     a channel with a golf ball obstacle
+    """
+
+    def __init__(self,SO,d_dimp,rd_dimp,N_e,N_a):
+        """
+           SO - pass in a sphericle obstacle as one of the arguments
+           d_dimp = diameter of the dimples on the golf ball
+           rd_dimp = radial distance of the center of the dimple from the center
+                     of the golf ball
+           N_e = number of dimples along all [0,pi] elevation angles 
+           N_e = number of dimples along all [0,2pi] azimuthal angles
+        """
+        self.sphere = SO;
+        self.d_dimp = d_dimp;
+        self.rd_dimp = rd_dimp;
+        self.N_e = N_e;
+        self.N_a = N_a;
+
+    def get_Lo(self):
+        return self.sphere.get_Lo()
+
+
+    def get_obstList(self,X,Y,Z):
+        """
+           return the obst list for the golf ball
+        """
+        obst_list1 = self.sphere.get_obstList(X,Y,Z)
+        el_angles = np.linspace(0.,np.pi,self.N_e)
+        
+        x = np.array(X); y = np.array(Y); z = np.array(Z);
+        print "removing the dimples"
+        # start removing dimples
+        iel = 0;
+        for el in el_angles:
+            iel+=1
+        # for each elevation, we will get a different number of dimples
+            N_az_el = np.floor(self.N_a*np.sin(el))+1;
+            if N_az_el == 1:
+                N_az_el+=1
+            
+            az_angles = np.linspace(0.,2.*np.pi, N_az_el, endpoint = False)
+            print "removing dimples in elevation %g of %g" % (iel, len(el_angles))
+            iaz = 0;
+            for az in az_angles:
+              iaz+=1
+              print "removing dimple %g of %g on this elevation" % (iaz,len(az_angles))
+              # get coordinates of the center of the spherical dimple
+              y_c_d = self.sphere.y_c + self.rd_dimp*np.cos(el);
+              z_c_d = self.sphere.z_c + self.rd_dimp*np.sin(az)*np.sin(el);
+              x_c_d = self.sphere.x_c + self.rd_dimp*np.cos(az)*np.sin(el);
+ 
+              dist = (x - x_c_d)**2 + (y - y_c_d)**2 + (z - z_c_d)**2
+              dimples = np.where(dist <= ((self.d_dimp/2.))**2)
+              obst_list1 = np.setxor1d(obst_list1[:],
+                  np.intersect1d(obst_list1[:],dimples[:]))
+             
+
+        return obst_list1[:] 
+        
+
+
 class EllipticalScourPit(EmptyChannel):
     """
      a channel with an elliptical scour pit with prescribed properties
@@ -86,7 +150,6 @@ class EllipticalScourPit(EmptyChannel):
         """
          return a list of all indices of lattice points within the boundaries of the
          scour pit obstacle
-
         """
        
         ellip_a = 2.*2.*self.cyl_rad
@@ -133,8 +196,7 @@ class ConeScourPit(EmptyChannel):
 
     def get_obstList(self,X,Y,Z):
         """
-         return a list of all indices of lattice points within the boundaries of the conical scour pit obstacle
-
+         return a list of all indices of lattice points within the boundaries of the conical scour pit obstacle.  x_s is defined in 'Scour at marine structures' by Richard Whitehouse, 1998.  Assumes river sand with phi (angle of repose) equal to 30 degrees.  h_cone is equal to rad_cone*tan(30) = rad_cone*0.57735
         """
        
         x_c_cone = self.x_c
@@ -163,7 +225,7 @@ class ConeScourPit(EmptyChannel):
 
 class SinglePile(EmptyChannel):
     """
-    a channel with a single pile, no scour
+    a channel with a single pile, no scour.  Used for comparison to both elliptical and conical scour pits.
     """
 
     def __init__(self,x_c,z_c,cyl_rad):
@@ -180,7 +242,6 @@ class SinglePile(EmptyChannel):
     def get_obstList(self,X,Y,Z):
         """
          return a list of all indices of lattice points within the boundaries of the bed Bed thickness is equal to the diameter of the piling (2x radius)
-
         """
        
     	#Bed
@@ -198,7 +259,7 @@ class SinglePile(EmptyChannel):
 
 class WavyBed(EmptyChannel):
     """
-    a channel with a single pile, Sin-wave bottom
+    a channel with a single pile, Sin-wave bottom.  
     """
 
     def __init__(self,x_c,z_c,cyl_rad):
@@ -214,7 +275,7 @@ class WavyBed(EmptyChannel):
 
     def get_obstList(self,X,Y,Z):
         """
-         return a list of all indices of lattice points within the boundaries of the bed Bed thickness is equal to the diameter of the piling (2x radius)
+waveh and wavel are used to characterize the sine wave for the bed.  shallower sin waves do better in remaining stable throughout the simulation at low Reynolds numbers.
 
         """
        
@@ -233,14 +294,15 @@ class WavyBed(EmptyChannel):
         
         return list(obst_list[:])
 
+
 class PipeContract(EmptyChannel):
     """
-    a single smooth pipe with diameter in, diam_in, through a contraction and leaving at diameter out, diam_out.  Contraction assumed to be 45 degrees.  Channel assumed to be 2 x 2 x 8.  Lo = diam_out (smaller diameter).  Contraction begins at z = 4.
+    a single smooth pipe with diameter in, diam_in, through a contraction and leaving at diameter out, diam_out.  Contraction assumed to be 45 degrees.  Channel assumed to be 2 x 2 x 8.  Lo = diam_out (smaller diameter).  Contraction begins at z = 4.  For a clean pipe, diam_in = 1.8 and diam_out = 0.8.
     """
 
     def __init__(self,diam_in,diam_out):
         """
-          constructor giving the x and z coordinates of the piling center along with the radius of the cylindrical piling
+ constructor identifying diameters into and out of contraction.  Recommend diam_in = 1.8 and diam_out = 0.8
         """
         self.diam_in = diam_in
 	self.diam_out = diam_out
@@ -285,12 +347,12 @@ class PipeContract(EmptyChannel):
 
 class PipeExpand(EmptyChannel):
     """
-    a single smooth pipe with diameter in, diam_in, through an expansion and leaving at diameter out, diam_out.  Expansion assumed to be 45 degrees.  Channel assumed to be 2 x 2 x 8.  Lo = diam_in (smaller diameter).  Expansion begins at z = 4.
+    opposite of pipe contraction.  a single smooth pipe with diameter in, diam_in, through an expansion and leaving at diameter out, diam_out.  Expansion assumed to be 45 degrees.  Channel assumed to be 2 x 2 x 8.  Lo = diam_in (smaller diameter).  Expansion begins at z = 4.  Best works when diam_in = 0.8 and diam_out = 1.8
     """
 
     def __init__(self,diam_in,diam_out):
         """
-          constructor giving the x and z coordinates of the piling center along with the radius of the cylindrical piling
+          constructor identifying pipe diameters into and out of expansion.  Recommend diam_in = 0.8 and diam_out = 1.8
         """
         self.diam_in = diam_in
 	self.diam_out = diam_out
@@ -335,16 +397,15 @@ class PipeExpand(EmptyChannel):
 
 class PipeTurn(EmptyChannel):
     """
-  
+  Provides an s-shaped pipe of constant radius with two 180-degree turns constructed out of constant-radius tori.  Diameter needs to be 0.5 for 
     """
 
-    def __init__(self,diam_in,diam_out):
+    def __init__(self,diam_in):
         """
-          constructor giving the x and z coordinates of the piling center along with the radius of the cylindrical piling
+          constructor providing pipe diameter for use in Lo.  Use 0.5.
         """
         self.diam_in = diam_in
-	self.diam_out = diam_out
-
+	
     def get_Lo(self):
         return self.diam_in
 
@@ -406,7 +467,7 @@ class PipeTurn(EmptyChannel):
 
 class PipeOut(EmptyChannel):
     """
-  
+  Class consisting of a single pipe of diam_in and length length_in exiting a wall into an open space.  
     """
 
     def __init__(self,diam_in,length_in):
@@ -435,7 +496,7 @@ class PipeOut(EmptyChannel):
 
 class Butterfly(EmptyChannel):
     """
-  
+  A geometry class that defines a fully open butterfly valve within a pipe of diam=1.0.  
     """
 
     def __init__(self,diam):
@@ -500,7 +561,7 @@ class Butterfly(EmptyChannel):
 
 class Tee(EmptyChannel):
     """
-  
+  establishes a single large pipe with a "tee" into a smaller pipe that loops up and around before rejoining the main line.  The Main line undergoes a contraction after the tee but before the rejoining secondary line.  diam_2 should be smaller than diam_1.
     """
 
     def __init__(self,diam_1,diam_2):
@@ -521,7 +582,11 @@ class Tee(EmptyChannel):
         """
 
 	#Pipe 1
-	pipe_1 = np.array(np.where((X - 1)**2 + (Y - 1)**2 <= (self.diam_1/2)**2)).flatten()
+	pipe_1a = np.array(np.where((X - 1)**2 + (Y - 1)**2 <= (self.diam_1/2)**2)).flatten()
+	pipe_1a_stop = np.array(np.where(Z<=4.)).flatten()
+	pipe_1a = np.intersect1d(pipe_1a[:],pipe_1a_stop[:])	
+	pipe_1b = np.array(np.where((X - 1)**2 + (Y - 1)**2 <= (self.diam_1/4)**2)).flatten()
+	pipe_1 = np.union1d(pipe_1a[:],pipe_1b[:])
 
 	#Pipe 2 Tee Off
 	tee_1 = np.array(np.where((X - 1)**2 + (Z - 1.5)**2 <= (self.diam_2/2)**2)).flatten()
@@ -529,9 +594,6 @@ class Tee(EmptyChannel):
 	tee_1_end = np.array(np.where(Y <= 3 - 0.5*self.diam_2)).flatten()
 	tee_1 = np.intersect1d(tee_1[:],tee_1_start[:])
 	tee_1 = np.intersect1d(tee_1[:],tee_1_end[:])
-
-	#Pipe 2 Tee Off Globe.  Need to write this if Pipe 2 > Pipe 1
-	#pipe_2_globe_1 = 
 
 	#Pipe 2 Elbow 1
 	elbow_1 = np.array(np.where((self.diam_2/2 - np.sqrt((Y - (3 - self.diam_2/2))**2 + (Z -(1.5 + self.diam_2/2))**2))**2 + (X - 1)**2 <= (self.diam_2/2)**2)).flatten()
@@ -562,14 +624,16 @@ class Tee(EmptyChannel):
 	tee_2 = np.intersect1d(tee_2[:],tee_2_start[:])
 	tee_2 = np.intersect1d(tee_2[:],tee_2_end[:])
 
+	empty = np.array(np.where(Y>=0.)).flatten() 
+
 	#Put the pieces together
 	pipe = np.union1d(pipe_1[:],tee_1[:])
 	pipe = np.union1d(pipe[:],elbow_1[:])
 	pipe = np.union1d(pipe[:],pipe_2[:])
 	pipe = np.union1d(pipe[:],elbow_2[:])
 	pipe = np.union1d(pipe[:],tee_2[:])
-	
-	
+	pipe = np.setxor1d(pipe[:], empty[:])	
+ 
 	obst_list = pipe[:]
 
         return list(obst_list[:])
@@ -601,7 +665,6 @@ class FluidChannel:
         wallList=['left','right','top','bottom']):
         """
          class constructor
-
         """
         self.Lx_p = Lx_p
         self.Ly_p = Ly_p
@@ -609,6 +672,7 @@ class FluidChannel:
         self.N_divs = N_divs
         self.fluid = fluid
         self.obst = obst
+        
 
         # generate the geometry
 
@@ -661,13 +725,11 @@ class FluidChannel:
         self.obst_list = np.setxor1d(self.obst_list[:],
             np.intersect1d(self.obst_list[:],self.solid_list[:]))
        
-    def write_mat_file(self):
+    def write_mat_file(self, geom_filename):
         """
           generate the mat file to interface with genInput.py.  Needs to save
           Lx_p, Ly_p, Lz_p, Lo, Ny_divs, rho_p, nu_p, snl, inl and onl.
-
           note that the snl and obst_list need to be combined into one list 
-
         """
         mat_dict = {}
         mat_dict['Lx_p'] = self.Lx_p
@@ -681,7 +743,7 @@ class FluidChannel:
         mat_dict['inl'] = list(self.inlet_list[:])
         mat_dict['onl'] = list(self.outlet_list[:])
 
-        scipy.io.savemat('geometry_description',mat_dict)
+        scipy.io.savemat(geom_filename,mat_dict)
 
 
     
@@ -738,13 +800,4 @@ class FluidChannel:
         solid_list = np.array(np.union1d(solid_list_a,solid_list_b)); 
         solid_list = np.array(np.union1d(solid_list,solid_list_c))
         self.solid_list = np.array(np.union1d(solid_list,solid_list_d))
-
-
-   
-
-
-
-
-
-
 
