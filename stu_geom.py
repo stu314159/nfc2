@@ -11,14 +11,14 @@ d_golf_ball = 0.0427 # meters
 aLx_p = 0.16 
 aLy_p = 0.16
 aLz_p = 0.3
-aN_divs = 120
+aN_divs = 80
 
 # construct the basic sphere
 print 'Constructing the channel with smooth sphere'
 sphereB = fc.SphereObstruction(d_golf_ball/2., aLx_p/2., aLy_p/2., aLz_p/2.)
 sphereChannel = fc.FluidChannel(Lx_p = aLx_p,Ly_p = aLy_p, Lz_p = aLz_p,
                                 N_divs = aN_divs, obst = sphereB)
-sphereChannel.write_mat_file('sphere')
+sphereChannel.write_mat_file('sphere_n80')
 
 
 # construct channel with the golf ball
@@ -44,5 +44,5 @@ golfChannel = fc.FluidChannel(Lx_p = aLx_p,Ly_p = aLy_p,Lz_p = aLz_p,
                                N_divs = aN_divs, obst = golfB)
 
 #golfChannel.write_bc_vtk()
-golfChannel.write_mat_file('golfBall')
+golfChannel.write_mat_file('golfBall_n80')
 
