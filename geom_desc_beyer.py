@@ -27,7 +27,7 @@ import FluidChannel as fc
 
 #PipeExpand requires Diam In, Diam Out
 #openChannel6 = fc.FluidChannel(wallList = [],
-#Lx_p = 2., Ly_p = 2., Lz_p = 8.,
+#Lx_p = 2., Ly_p = 2., Lz_p = 16.,
 #N_divs = 61,
 #obst = fc.PipeExpand(0.8,1.8))
 #openChannel6.write_bc_vtk()
@@ -42,17 +42,43 @@ import FluidChannel as fc
 #openChannel7.write_mat_file()
 
 #WavyBed requires x_c, z_c, cyl_rad
-openChannel8 = fc.FluidChannel(wallList = ['bottom','top','left','right'],
-Lx_p = 1., Ly_p = 1., Lz_p = 8.,
-N_divs = 41,
-obst = fc.WavyBed(0.5,4.,0.1))
+#openChannel8 = fc.FluidChannel(wallList = ['bottom','top'],
+#Lx_p = 1., Ly_p = 1., Lz_p = 6.,
+#N_divs = 51,
+#obst = fc.WavyBed(0.5,3.,0.1))
 #openChannel8.write_bc_vtk()
-openChannel8.write_mat_file()
+#openChannel8.write_mat_file()
 
-#PipeTurn requires diam in and diam out
+#PipeTurn requires pipe diam = 0.5 = Lo
 #openChannel9 = fc.FluidChannel(wallList = [],
 #Lx_p = 2., Ly_p = 5., Lz_p = 5.,
-#N_divs = 51,
-#obst = fc.PipeTurn(0.5,0.5))
+#N_divs = 61,
+#obst = fc.PipeTurn(0.5)
 #openChannel9.write_bc_vtk()
-#openChannel9.write_mat_file()
+#openChannel9.write_mat_file('Turn')
+
+#PipeOut requires diam in and length in.  Assumes channel Lx = 4 and Ly = 4
+#openChannel10 = fc.FluidChannel(wallList = [],
+    #Lx_p = 4., Ly_p = 4., Lz_p = 9.,
+    #N_divs = 41,
+    #obst = fc.PipeOut(0.5,1.0))
+#openChannel10.write_bc_vtk()
+#openChannel10.write_mat_file()
+
+#Butterfly requires diam.  Assumes Lx = 1.2, Ly = 1.2, Lz = 8 (z can vary).  Diam must be equal to 1.0
+#openChannel11 = fc.FluidChannel(wallList = [],
+#Lx_p = 1.2, Ly_p = 1.2, Lz_p = 8.,
+    #N_divs = 11,
+    #obst = fc.Butterfly(1.0))
+#openChannel11.write_bc_vtk()
+#openChannel11.write_mat_file()
+
+#Tee pipes requires a diameter for pipe 1 and a diameter for pipe 2.  Assumes Lx = 2, Ly = 4, Lz = 8.  
+#openChannel12 = fc.FluidChannel(wallList = [],
+   # Lx_p = 2., Ly_p = 4., Lz_p = 8.,
+    #N_divs = 61,
+    #obst = fc.Tee(1.,0.5))
+#openChannel12.write_bc_vtk()
+#openChannel12.write_mat_file('Tee_Change')
+
+
