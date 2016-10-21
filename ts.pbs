@@ -1,14 +1,10 @@
 #!/bin/bash
 #PBS -A USNAM37752431
 #PBS -q gpu
-#PBS -l select=24:ncpus=10:accelerator_model=Tesla_K40s:mpiprocs=1
-#PBS -l walltime=07:59:00
-#PBS -l ccm=1
-#PBS -N Tee_Re10k
+#PBS -N ChanCavity400
 #PBS -l select=8:ncpus=10:accelerator_model=Tesla_K40s:mpiprocs=1
 #PBS -l walltime=03:00:00
 #PBS -l ccm=1
-#PBS -N gb_N80_50k
 #PBS -j oe
 #PBS -V
 #PBS -S /bin/bash

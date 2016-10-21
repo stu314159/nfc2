@@ -32,6 +32,36 @@ class EmptyChannel:
         """
         return []
 
+class ChannelCavity(EmptyChannel):
+   """
+     a channel with a cavity part way down the length
+      - implicitly the channel begins at z = 0
+      - and the depth of the channel indicates the maximum value
+      - of Y that will be defined as "floor"  
+      - the bottom of the cavity will be defined as Y = 0
+      - this version of the cavity will span the width (X-direction)
+      - of the channel.
+   """
+
+   def __init__(self,depth,z_start,z_end):
+       self.depth = depth
+       self.z_start = z_start
+       self.z_end = z_end
+
+   def get_Lo(self):
+       return self.depth
+
+   def get_obstList(self,X,Y,Z):
+      """ return a list of indices within the boundary of the channel floor
+      """
+      x = np.array(X); y = np.array(Y); z = np.array(Z);
+      cav1 = np.where(z >= self.z_start)
+      cav2 = np.where(z <= self.z_end)
+      ol = np.setxor1d(cav1[:],cav2[:])
+      cav3 = np.where(y <= self.depth)
+      ol = np.intersect1d(ol[:],cav3[:])
+      return ol[:]
+
 
 class SphereObstruction(EmptyChannel):
     """
