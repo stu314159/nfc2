@@ -93,7 +93,61 @@ class SphereObstruction(EmptyChannel):
         dist = (x - self.x_c)**2 + (y - self.y_c)**2 + (z - self.z_c)**2
        
         return list(np.where(dist < self.r**2))
-       
+    
+class TwinJet(EmptyChannel):
+    """
+    a channel with block obstructions allowing for simulation of 
+    the twin-jet problem
+  
+    """
+  
+    def __init__(self,y1,x1,W,a,S,L):
+        """
+        y1 = height (m) of first channel in twin-jet
+        x1 = value of smallest magnitude x-coordinate (assume width
+        in x-direction
+        W = width (m) width of each jet channel
+        a = width (m) of the openings of both jets
+        S = pitch (m) distance between centroids of twin jets (should be
+        greater than a)
+        L = length (m) length of the channel for twin jets prior to openings
+        
+        assumes the overall domain starts at z = 0.
+        assumes overall domain is wider (in x-direction) than x1+W
+        assumes overall domain is higher (in y-direction) than y1+S+a/2.
+        """
+    
+        self.y1 = y1
+        self.x1 = x1
+        self.W = W
+        self.a = a
+        self.S = S
+        self.L = L
+    
+    def get_Lo(self):
+        """ 
+           characteristic length is the hydraulic diameter. (flow area/wetted
+           perimeter)
+        """
+        flow_area = self.a * self.W
+        wetted_perimeter = 2.*self.a+2.*self.W
+        return flow_area/wetted_perimeter
+    
+    def get_obstList(self,X,Y,Z):
+        
+        x = np.array(X); y = np.array(Y); z = np.array(Z);
+        obst_l = np.where(z < self.L)
+        obst_h = np.where(z > 0.2)
+        obst = np.intersect1d(obst_l[:],obst_h[:])
+        y_dist1 = np.abs(y - (self.y1+self.a/2.))
+        ch1 = np.where(y_dist1<self.a/2.)
+        ch1 = np.intersect1d(obst[:],ch1[:])
+        obst = np.setxor1d(obst[:],ch1[:])
+        y_dist2 = np.abs(y - (self.y1+self.a/2.+self.S))
+        ch2 = np.where(y_dist2<self.a/2.)
+        ch2 = np.intersect1d(obst[:],ch2[:])
+        obst = np.setxor1d(obst[:],ch2[:])
+        return obst[:]
 
 class GolfBall(EmptyChannel):
     """
