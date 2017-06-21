@@ -3,18 +3,18 @@
 more automated generation of PBS jobfile 
 
 """
-jobfileName = 'turbineSim_jobfile.pbs'
-executableName = 'turbineSim'
+jobfileName = 'demo1.pbs'
+executableName = 'NFC'
 
-jobName = 'ts_test' # must be 15 characters or less
-nnodes = 4
+jobName = 'demo1' # must be 15 characters or less
+nnodes = 8
 ppn = 10 # for LBM jobs on the Cray XC30 machines, 8 ppn seems to saturate memory bandwidth.
 mpi_procs_per_node =1 # only change this if you need more memory per process.
 walltime='01:00:00'
 platform='SHEPARD'
 queue = 'gpu'
 
-proc_script='process_lbm_data.py'
+proc_script='process_lbm_data_mpi.py'
 
 filesToCopy=[ executableName, 'snl.lbm','inl.lbm','onl.lbm','params.lbm',proc_script,'vtkHelper.py']
 
@@ -22,7 +22,7 @@ filesToCopy=[ executableName, 'snl.lbm','inl.lbm','onl.lbm','params.lbm',proc_sc
 
 #--------- more-or-less fixed code below -----------------
 
-proj_id = 'USNAM37752431' # <-- don't post this anywhere public
+proj_id = 'USNAM37752431' 
 mpi_procs = mpi_procs_per_node*nnodes
 
 

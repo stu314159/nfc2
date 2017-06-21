@@ -19,7 +19,7 @@ ifeq ($(USE_NVTX),1)
 	MPI_FLAGS+= -DUSE_NVTX
 endif
 
-TARGET=turbineSim
+TARGET=NFC
 
 %.o: %.cpp
 	$(MPI_CC) $(MPI_FLAGS) -c $^

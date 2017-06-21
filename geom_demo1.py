@@ -5,7 +5,7 @@ import numpy as np
 aLx_p = 1.0
 aLy_p = 1.0
 aLz_p = 10.0
-aNdivs = 15
+aNdivs = 41
 
 #sphere position
 a_x = 0.5
