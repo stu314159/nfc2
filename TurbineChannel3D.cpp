@@ -418,10 +418,17 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
                 f25=fIn[getIdx(nnodes,numSpd,tid,25)]; f26=fIn[getIdx(nnodes,numSpd,tid,26)];
                 
                 //compute density
-                rho = f0+f1+f2+f3+f4+f5+f6+f7+f8+f9+f10+f11+f12+f13+f14;
-                ux=f1-f2+f7-f8+f9-f10+f11-f12+f13-f14; ux/=rho;
-                uy=f3-f4+f7+f8-f9-f10+f11+f12-f13-f14; uy/=rho;
-                uz=f5-f6+f7+f8+f9+f10-f11-f12-f13-f14; uz/=rho;
+                rho = f0+f1+f2+f3+f4+f5+f6+f7+f8+f9+f10+f11+f12+f13+f14+f15+f16+\
+                      f17+f18+f19+f20+f21+f22+f23+f24+f25+f26;
+                ux=-f1-f4-f5-f6-f7-f10-f11-f12-f13+f14\
+                   +f17+f18+f19+f20+f23+f24+f25+f26; 
+                ux/=rho;
+                uy=-f2-f4+f5-f8-f9-f10-f11+f12+f13+f15+f17\
+                   -f18+f21+f22+f23+f24-f25-f26; 
+                uy/=rho;
+                uz=-f3-f6+f7-f8+f9-f10+f11-f12+f13+f16+f19\
+                   -f20+f21-f22+f23-f24+f25-f26; 
+                uz/=rho;
                 
                 	// set macroscopic boundary conditions
 		if(inl[tid]==1){
