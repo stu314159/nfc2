@@ -47,7 +47,7 @@ class TurbineChannel3D{
       int Restart_flag;
 
       // lattice data
-      static const int numSpd=15;
+      static const int numSpd=27;
       const float * ex;
       const float * ey;
       const float * ez;

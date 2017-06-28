@@ -785,7 +785,9 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
     void TurbineChannel3D::stream_out_collect(bool isEven,const int z_start,float * RESTRICT buff_out, const int numStreamSpeeds, const int * RESTRICT  streamSpeeds, int streamNum){
     int Ny = this->Ny;
     int Nx = this->Nx;
-    int numSpd = this->numSpd;
+    int numSpd = this->
+
+numSpd;
     int nnodes = this->nnodes;
     
     
