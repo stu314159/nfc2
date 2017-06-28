@@ -430,7 +430,7 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
                    -f20+f21-f22+f23-f24+f25-f26; 
                 uz/=rho;
                 
-                	// set macroscopic boundary conditions
+                	// set macroscopic boundary conditions <-- todo update macroscopic boundary condition calculation
 		if(inl[tid]==1){
 		  ux=0;uy=0; uz=u_bc[tid];
 		  //set rho based on uz
