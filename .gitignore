@@ -3,6 +3,7 @@
 *.cub
 *.ptx
 turbineSim
+NFC
 *.mat
 *.*~
 *~
