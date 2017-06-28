@@ -105,7 +105,7 @@ class TurbineChannel3D{
       void initialize_lattice_data();
       void initialize_local_partition_variables();
       void initialize_mpi_buffers();
-      void D3Q15_process_slices(bool isEven, const int firstSlice,
+      void D3Q27_process_slices(bool isEven, const int firstSlice,
 	  const int lastSlice, int streamNum, int waitNum);
       void stream_out_collect(bool isEven,const int z_start,float * RESTRICT buff_out, 
           const int numStreamSpeeds, const int * RESTRICT streamSpeeds, int streamNum);

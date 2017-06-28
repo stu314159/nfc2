@@ -356,7 +356,7 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
    }
 }
 
-    void TurbineChannel3D::D3Q15_process_slices(bool isEven, const int firstSlice, const int lastSlice, int streamNum, int waitNum){
+    void TurbineChannel3D::D3Q27_process_slices(bool isEven, const int firstSlice, const int lastSlice, int streamNum, int waitNum){
     
     
     const float * RESTRICT fIn;
@@ -385,7 +385,7 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
     
     dummyUse(nnodes);
    
-    const int numSpd=15;
+    const int numSpd=27;
     #pragma omp parallel for collapse(3)
     #pragma acc parallel loop wait(writeWaitNum,waitNum) async(streamNum) collapse(3) gang vector(128) \
         present(fIn[0:nnodes*numSpd]) \
@@ -394,7 +394,8 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
     for(int Z=firstSlice;Z<lastSlice;Z++){
         for(int Y=0;Y<Ny;Y++){
             for(int X=0;X<Nx;X++){
-                float f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14;
+                float f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f20 \
+                      f21,f22,f23,f24,f25,f26;
                 float cu,rho,ux,uy,uz,w;
                 int X_t,Y_t,Z_t,tid_t,tid;
                 
@@ -408,7 +409,13 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
                 f8=fIn[getIdx(nnodes, numSpd, tid,8)]; f9=fIn[getIdx(nnodes, numSpd, tid,9)];
                 f10=fIn[getIdx(nnodes, numSpd, tid,10)]; f11=fIn[getIdx(nnodes, numSpd, tid,11)];
                 f12=fIn[getIdx(nnodes, numSpd, tid,12)]; f13=fIn[getIdx(nnodes, numSpd, tid,13)];
-                f14=fIn[getIdx(nnodes, numSpd, tid,14)];
+                f14=fIn[getIdx(nnodes, numSpd, tid,14)]; f15=fIn[getIdx(nnodes,numSpd,tid,15)];
+                f16=fIn[getIdx(nnodes,numSpd,tid,16)]; f16=fIn[getIdx(nnodes,numSpd,tid,17)];
+                f18=fIn[getIdx(nnodes,numSpd,tid,18)]; f19=fIn[getIdx(nnodes,numSpd,tid,19)];
+                f20=fIn[getIdx(nnodes,numSpd,tid,20)]; f21=fIn[getIdx(nnodes,numSpd,tid,21)];
+                f22=fIn[getIdx(nnodes,numSpd,tid,22)]; f23=fIn[getIdx(nnodes,numSpd,tid,23)];
+                f23=fIn[getIdx(nnodes,numSpd,tid,24)]; f24=fIn[getIdx(nnodes,numSpd,tid,25)];
+                f25=fIn[getIdx(nnodes,numSpd,tid,25)]; f26=fIn[getIdx(nnodes,numSpd,tid,26)];
                 
                 //compute density
                 rho = f0+f1+f2+f3+f4+f5+f6+f7+f8+f9+f10+f11+f12+f13+f14;
