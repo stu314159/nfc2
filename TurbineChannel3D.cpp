@@ -449,93 +449,168 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 	
 	
 		 //everyone compute equilibrium
-		float fe0,fe1,fe2,fe3,fe4,fe5,fe6,fe7,fe8,fe9,fe10,fe11,fe12,fe13,fe14;
-		//speed 0 ex=ey=ez=0 w=2./9.
+		float fe0,fe1,fe2,fe3,fe4,fe5,fe6,fe7,fe8,fe9,fe10,fe11,fe12,fe13,fe14, \
+                      fe15, fe16, fe17, fe18, fe19, fe20, fe21, fe22, fe23, fe24, fe25, \
+                      fe26, fe27;
+		//speed 0 ex=ey=ez=0 w=8./27.
 	
-		fe0=rho*(2./9.)*(1.-1.5*(ux*ux+uy*uy+uz*uz));
+		fe0=rho*(8./27.)*(1.-1.5*(ux*ux+uy*uy+uz*uz));
 	
 
-		//speed 1 ex=1 ey=ez=0 w=1./9.
-		cu=3.*(1.*ux);
-		fe1=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
+		//speed 1 ex=-1 ey=ez=0 w=2./27.
+		cu=3.*(1.*-ux);
+		fe1=rho*(2./27.)*(1.+cu+0.5*(cu*cu)-
 				1.5*(ux*ux+uy*uy+uz*uz));
 	      
 
-		//speed 2 ex=-1 ey=ez=0 w=1./9.
+		//speed 2 ex=-1 ey=ez=0 w=2./27.
 		cu=3.*((-1.)*ux);
-		fe2=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
+		fe2=rho*(2./27.)*(1.+cu+0.5*(cu*cu)-
 				1.5*(ux*ux+uy*uy+uz*uz));
 	      
 
-		//speed 3 ex=0 ey=1 ez=0 w=1./9.
-		cu=3.*(1.*uy);
+		//speed 3 ex=0 ey=0 ez=-1 w=2./27.
+		cu=3.*(1.*-uz);
 		fe3=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
 				1.5*(ux*ux+uy*uy+uz*uz));
 	      
 
-		//speed 4 ex=0 ey=-1 ez=0 w=1./9.
-		cu=3.*(-1.*uy);
-		fe4=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
+		//speed 4 ex=-1 ey=-1 ez=0 w=1./54.
+		cu=3.*(-1.*(ux+uy));
+		fe4=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
 				1.5*(ux*ux+uy*uy+uz*uz));
 	
 
-		//speed 5 ex=ey=0 ez=1 w=1./9.
-		cu=3.*(1.*uz);
-		fe5=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
+		//speed 5 ex=-1 ey=1 ez=0 w=1./54.
+		cu=3.*(1.*(-ux+uy));
+		fe5=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
 				1.5*(ux*ux+uy*uy+uz*uz));
 	
 
-		//speed 6 ex=ey=0 ez=-1 w=1./9.
-		cu=3.*(-1.*uz);
-		fe6=rho*(1./9.)*(1.+cu+0.5*(cu*cu)-
+		//speed 6 ex=-1 ey=0 ez=-1 w=1./54.
+		cu=3.*(-1.*(ux+uz));
+		fe6=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
 				1.5*(ux*ux+uy*uy+uz*uz));
 	
-		//speed 7 ex=ey=ez=1 w=1./72.
-		cu=3.*(ux+uy+uz);
-		fe7=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
+		//speed 7 ex=-1 ey=0 ez=1 w=1./54.
+		cu=3.*(-ux+uz);
+		fe7=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
 				  1.5*(ux*ux+uy*uy+uz*uz));
 	      
 
-		//speed 8 ex=-1 ey=ez=1 w=1./72.
-		cu=3.*(-ux+uy+uz);
-		fe8=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
+		//speed 8 ex=0 ey=-1 ez=-1 w=1./54.
+		cu=3.*(-uy-uz);
+		fe8=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
 				  1.5*(ux*ux+uy*uy+uz*uz));
 	
 
-		//speed 9 ex=1 ey=-1 ez=1 w=1./72.
-		cu=3.*(ux-uy+uz);
-		fe9=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
+		//speed 9 ex=0 ey=-1 ez=1 w=1./54.
+		cu=3.*(-uy+uz);
+		fe9=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
 				  1.5*(ux*ux+uy*uy+uz*uz));
 	
 
-		//speed 10 ex=-1 ey=-1 ez=1 w=1/72
-		cu=3.*(-ux-uy+uz);
-		fe10=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
-	      
-
-		//speed 11 ex=1 ey=1 ez=-1 w=1/72
-		cu=3.*(ux+uy-uz);
-		fe11=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
-	
-
-		//speed 12 ex=-1 ey=1 ez=-1 w=1/72
-		cu=3.*(-ux+uy-uz);
-		fe12=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
-	      
-
-		//speed 13 ex=1 ey=ez=-1 w=1/72
-		cu=3.*(ux-uy-uz);
-		fe13=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
-				  1.5*(ux*ux+uy*uy+uz*uz));
-	      
-
-		//speed 14 ex=ey=ez=-1 w=1/72
+		//speed 10 ex=-1 ey=-1 ez=-1 w=1/216
 		cu=3.*(-ux-uy-uz);
-		fe14=rho*(1./72.)*(1.+cu+0.5*(cu*cu)-
+		fe10=rho*(1./216.)*(1.+cu+0.5*(cu*cu)-
 				  1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		//speed 11 ex=-1 ey=-1 ez=1 w=1/216
+		cu=3.*(-ux-uy+uz);
+		fe11=rho*(1./216.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	
+
+		//speed 12 ex=-1 ey=1 ez=-1 w=1/216
+		cu=3.*(-ux+uy-uz);
+		fe12=rho*(1./216.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		//speed 13 ex=-1 ey=1 ez=1 w=1/216
+		cu=3.*(-ux+uy+uz);
+		fe13=rho*(1./216.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		//speed 14 ex=1 ey=ez=0 w=2/27
+		cu=3.*(ux);
+		fe14=rho*(2./27.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+
+               //speed 15 ex=0 ey=1 ez=0 w=2./27.
+		cu=3.*(1.*uy);
+		fe15=rho*(2./27.)*(1.+cu+0.5*(cu*cu)-
+				1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		//speed 16 ex=0 ey=0 ez=1 w=2./27.
+		cu=3.*((1.)*uz);
+		fe16=rho*(2./27.)*(1.+cu+0.5*(cu*cu)-
+				1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		//speed 17 ex=1 ey=1 ez=0 w=1./54.
+		cu=3.*(ux+uy);
+		fe17=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
+				1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		//speed 18 ex=1 ey=-1 ez=0 w=1./54.
+		cu=3.*(1.*(ux-uy));
+		fe18=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
+				1.5*(ux*ux+uy*uy+uz*uz));
+	
+
+		//speed 19 ex=1 ey=0 ez=1 w=1./54.
+		cu=3.*(1.*(ux+uz));
+		fe19=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
+				1.5*(ux*ux+uy*uy+uz*uz));
+	
+
+		//speed 20 ex=1 ey=0 ez=-1 w=1./54.
+		cu=3.*(1.*(ux-uz));
+		fe20=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
+				1.5*(ux*ux+uy*uy+uz*uz));
+	
+		//speed 21 ex=0 ey=1 ez=1 w=1./54.
+		cu=3.*(uy+uz);
+		fe21=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		//speed 22 ex=0 ey=1 ez=-1 w=1./54.
+		cu=3.*(uy-uz);
+		fe22=rho*(1./54.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	
+
+		//speed 23 ex=1 ey=1 ez=1 w=1./216.
+		cu=3.*(ux+uy+uz);
+		fe23=rho*(1./216.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	
+
+		//speed 24 ex=1 ey=1 ez=-1 w=1/216
+		cu=3.*(ux+uy-uz);
+		fe24=rho*(1./216.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		//speed 25 ex=1 ey=-1 ez=1 w=1/216
+		cu=3.*(ux-uy+uz);
+		fe25=rho*(1./216.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	
+
+		//speed 26 ex=1 ey=-1 ez=-1 w=1/216
+		cu=3.*(ux-uy-uz);
+		fe26=rho*(1./216.)*(1.+cu+0.5*(cu*cu)-
+				  1.5*(ux*ux+uy*uy+uz*uz));
+	      
+
+		
 	
 		// if on inlet or outlet, compute and bounce-back non-equilibrium part of f.
 		// see referenecs on regularized boundary conditions for full details on theory.
