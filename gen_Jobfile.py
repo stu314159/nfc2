@@ -3,10 +3,10 @@
 more automated generation of PBS jobfile 
 
 """
-jobfileName = 'test_TJ.pbs'
+jobfileName = 'test_Channel.pbs'
 executableName = 'NFC'
 
-jobName = 'twinJet' # must be 15 characters or less
+jobName = 'chanCav200' # must be 15 characters or less
 nnodes = 8
 ppn = 10 # for LBM jobs on the Cray XC30 machines, 8 ppn seems to saturate memory bandwidth.
 mpi_procs_per_node =1 # only change this if you need more memory per process.

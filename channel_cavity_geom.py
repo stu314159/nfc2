@@ -4,8 +4,8 @@ import numpy as np
 # overall channel dimensions
 aLx_p = 0.203 # meters
 aLy_p = 0.253 # meters
-aLz_p = 2.06 # meters
-aN_divs = 81
+aLz_p = 2.00 # meters
+aN_divs = 141
 
 # cavity parameters
 cDepth = 0.240 # meters
