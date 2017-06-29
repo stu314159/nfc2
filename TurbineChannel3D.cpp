@@ -434,7 +434,8 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
 		if(inl[tid]==1){
 		  ux=0;uy=0; uz=u_bc[tid];
 		  //set rho based on uz
-		  rho = (1./(1.-uz))*(2.0*(f6+f11+f12+f13+f14)+(f0+f1+f2+f3+f4));
+		  rho = (1./(1.-uz))*(2.0*(f3+f6+f8+f10+f12+f20+f22+f24+f26)+\
+                                     (f0+f1+f2+f4+f5+f14+f15+f17+f18));
 
 		}
 		if(onl[tid]==1){
