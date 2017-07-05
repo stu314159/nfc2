@@ -1,10 +1,10 @@
 #!/bin/bash
 #PBS -A USNAM37752431
 #PBS -q standard
-#PBS -l select=32:ncpus=32:mpiprocs=1
+#PBS -l select=4:ncpus=12:mpiprocs=12
 #PBS -l walltime=01:00:00
 #PBS -l ccm=1
-#PBS -N chanCyl_Re75
+#PBS -N nfc2_dev
 #PBS -j oe
 #PBS -V
 #PBS -S /bin/bash
@@ -22,5 +22,5 @@ cp $PBS_O_WORKDIR/params.lbm .
 cp $PBS_O_WORKDIR/process_lbm_data.py .
 cp $PBS_O_WORKDIR/process_lbm_data_mpi.py .
 cp $PBS_O_WORKDIR/vtkHelper.py .
-export OMP_NUM_THREADS=32
+export OMP_NUM_THREADS=1
 aprun -B ./turbineSim 
