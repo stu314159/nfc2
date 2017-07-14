@@ -124,12 +124,12 @@ class WallMountedBrick(EmptyChannel):
         """
         x = np.array(X); y = np.array(Y); z = np.array(Z);
         
-        inH = np.where(y<=H);
-        inZa = np.where(z>=(self.z_c - L/2.));
-        inZb = np.where(z<=(self.z_c + L/2.));
+        inH = np.where(y<=self.H);
+        inZa = np.where(z>=(self.z_c - self.L/2.));
+        inZb = np.where(z<=(self.z_c + self.L/2.));
         inZ = np.intersect1d(inZa,inZb);
-        inXa = np.where(x>=(self.x_c - W/2.));
-        inXb = np.where(x<=(self.x_c + W/2.));
+        inXa = np.where(x>=(self.x_c - self.W/2.));
+        inXb = np.where(x<=(self.x_c + self.W/2.));
         inX = np.intersect1d(inXa,inXb);
         obst = np.intersect1d(inH,inZ);
         obst = np.intersect1d(obst[:],inX);
