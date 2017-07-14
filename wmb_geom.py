@@ -12,7 +12,7 @@ import FluidChannel as fc
 aLx_p = 6.4
 aLy_p = 3.0
 aLz_p = 14.0
-aNdivs = 10
+aNdivs = 41
 
 # wall mounted brick parameters
 x_c = 3.5;
@@ -30,4 +30,4 @@ myChan = fc.FluidChannel(Lx_p=aLx_p,Ly_p=aLy_p,Lz_p=aLz_p,obst=myObst,
 myChan.write_mat_file('wall_mounted_brick');
 
 # write vtk of boundary conditions so you can visualize them
-myChan.write_bc_vtk();
+#myChan.write_bc_vtk();
