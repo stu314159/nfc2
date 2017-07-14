@@ -4,7 +4,6 @@ Class implementation file for the Python class FluidChannel
 Depends on vtkHelper module for geometry visualization functionality
 """
 import math
-import argparse
 import numpy as np
 from vtkHelper import saveStructuredPointsVTK_ascii as writeVTK
 import scipy.io
@@ -54,7 +53,8 @@ class ChannelCavity(EmptyChannel):
    def get_obstList(self,X,Y,Z):
       """ return a list of indices within the boundary of the channel floor
       """
-      x = np.array(X); y = np.array(Y); z = np.array(Z);
+      #x = np.array(X); 
+      y = np.array(Y); z = np.array(Z);
       cav1 = np.where(z >= self.z_start)
       cav2 = np.where(z <= self.z_end)
       ol = np.setxor1d(cav1[:],cav2[:])
@@ -94,6 +94,50 @@ class SphereObstruction(EmptyChannel):
        
         return list(np.where(dist < self.r**2))
     
+
+class WallMountedBrick(EmptyChannel):
+    """
+    a channel with a brick mounted to the wall (y = min)
+    """
+    
+    def __init__(self,x_c,z_c,L,W,H):
+        """
+        x_c = x-coordinate of the brick centroid
+        z_c = z-coordinate of the brick centroid
+        L = length of the brick (in the Z-direction)
+        W = width of the brick (in the X-direction)
+        H = height of the brick (in the Y-direction)
+        """
+        self.x_c = x_c
+        self.z_c = z_c
+        self.L = L
+        self.W = W
+        self.H = H
+        
+    def get_Lo(self):
+        
+        return self.H
+    
+    def get_obstList(self,X,Y,Z):
+        """
+        return a list of all indices within the boundary of the brick
+        """
+        x = np.array(X); y = np.array(Y); z = np.array(Z);
+        
+        inH = np.where(y<=H);
+        inZa = np.where(z>=(self.z_c - L/2.));
+        inZb = np.where(z<=(self.z_c + L/2.));
+        inZ = np.intersect1d(inZa,inZb);
+        inXa = np.where(x>=(self.x_c - W/2.));
+        inXb = np.where(x<=(self.x_c + W/2.));
+        inX = np.intersect1d(inXa,inXb);
+        obst = np.intersect1d(inH,inZ);
+        obst = np.intersect1d(obst[:],inX);
+        
+        return obst[:]
+        
+
+
 class TwinJet(EmptyChannel):
     """
     a channel with block obstructions allowing for simulation of 

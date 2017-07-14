@@ -1,5 +1,5 @@
 import FluidChannel as fc
-import numpy as np
+#import numpy as np
 
 #overall channel dimensions
 aLx_p = 1.0
