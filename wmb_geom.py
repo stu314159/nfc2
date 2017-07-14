@@ -25,3 +25,9 @@ myObst = fc.WallMountedBrick(x_c,z_c,L,W,H);
 
 myChan = fc.FluidChannel(Lx_p=aLx_p,Ly_p=aLy_p,Lz_p=aLz_p,obst=myObst,
                          N_divs=aNdivs)                         
+
+# write the mat file
+myChan.write_mat_file('wall_mounted_brick');
+
+# write vtk of boundary conditions so you can visualize them
+myChan.write_bc_vtk();
