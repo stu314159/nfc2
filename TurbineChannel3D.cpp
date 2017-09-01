@@ -387,7 +387,9 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
    
     const int numSpd=15;
     #pragma omp parallel for collapse(3)
-    #pragma acc parallel loop wait(writeWaitNum,waitNum) async(streamNum) collapse(3) gang vector(128) \
+   // #pragma acc parallel loop wait(writeWaitNum,waitNum) async(streamNum) collapse(3) gang vector(128) \
+    
+    #pragma acc parallel loop wait(writeWaitNum,waitNum) async(streamNum) collapse(3) \
         present(fIn[0:nnodes*numSpd]) \
         present(fOut[0:nnodes*numSpd]) \
         present(inl[0:nnodes], onl[0:nnodes], snl[0:nnodes], u_bc[0:nnodes])
@@ -815,7 +817,9 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
   //    }
   //  }
 
-  #pragma acc parallel loop async(streamNum) collapse(3) gang vector(128) \
+  //#pragma acc parallel loop async(streamNum) collapse(3) gang vector(128) \
+
+    #pragma acc parallel loop async(streamNum) collapse(3) \
       present(streamSpeeds[0:numStreamSpeeds]) \
       present(fIn_b[0:nnodes*numSpd]) \
       copyout(buff_out[0:Nx*Ny*numStreamSpeeds*HALO])
@@ -864,8 +868,11 @@ void TurbineChannel3D::write_data(MPI_Comm comm, bool isEven){
     //        }
     //    }
     // }
-   //}
-   #pragma acc parallel loop async(streamNum) collapse(3) gang vector(128) \
+   //}  
+   
+   //#pragma acc parallel loop async(streamNum) collapse(3) gang vector(128) \
+
+    #pragma acc parallel loop async(streamNum) collapse(3) \
       present(streamSpeeds[0:numStreamSpeeds]) \
       present(fOut_b[0:nnodes*numSpd]) \
       copyin(buff_in[0:Nx*Ny*numStreamSpeeds*HALO])

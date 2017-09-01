@@ -1,0 +1,40 @@
+#!/bin/bash 
+
+
+ 
+#PBS -q gpu 
+#PBS -l select=8:ncpus=10:mpiprocs=1 
+#PBS -l walltime=01:00:00 
+ 
+#PBS -N cc_NFC_Re30k 
+#PBS -j oe 
+
+#PBS -S /bin/bash 
+
+
+cd /mnt/lustre/scratch/sblair/jobout
+JOBID=`echo $PBS_JOBID | cut -d '.' -f 1` 
+if [ ! -d $JOBID ]; then 
+  mkdir -p $JOBID 
+fi 
+cd $JOBID 
+
+cp $PBS_O_WORKDIR/NFC . 
+cp $PBS_O_WORKDIR/FluidChannel.py .
+cp $PBS_O_WORKDIR/validate.py .
+cp $PBS_O_WORKDIR/run_chanCav_nfc.sh .
+cp $PBS_O_WORKDIR/processNFC.py .
+cp $PBS_O_WORKDIR/hdf5Helper.py .
+cp $PBS_O_WORKDIR/channel_cavity_geom.py .
+cp $PBS_O_WORKDIR/genInput.py .
+cp $PBS_O_WORKDIR/process_lbm_data_mpi.py . 
+cp $PBS_O_WORKDIR/vtkHelper.py . 
+
+module swap PrgEnv-cray PrgEnv-gnu
+
+source ~/work/projects/venv/bin/activate
+# run the execution script
+./run_chanCav_nfc.sh 141
+
+# deactivate the venv
+deactivate 
