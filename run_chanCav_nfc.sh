@@ -11,8 +11,8 @@ ts_rep_freq=1000
 Warmup_ts=0
 plot_freq=5000
 Re=30000
-dt=0.00005
-Cs=20
+dt=0.00001
+Cs=50
 Restart_flag=0
 
 aprun -n 1 ./channel_cavity_geom.py $1
@@ -28,6 +28,6 @@ module load craype-accel-nvidia35
 
 aprun -B ./NFC
 
-module swap PrgEnv-pgi PrgEnv-gnu
+#module swap PrgEnv-pgi PrgEnv-gnu
 
 aprun -n 1 ./processNFC.py
